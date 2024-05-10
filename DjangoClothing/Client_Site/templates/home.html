@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+</head>
+
+<body>
+    <h1 class="helloWorldText">Customer's Registration</h1>
+
+    <form action="/api/insert_customer/" method="post">
+        {% csrf_token %}
+        <input type="text" placeholder="First Name" name="fname" id="fname"><br><br>
+        <input type="text" placeholder="Middle Name" name="mname" id="mname"><br><br>
+        <input type="text" placeholder="Last Name" name="lname" id="lname"><br>
+
+        <p>Gender:</p>
+          <input type="radio" id="male" name="gender" value="Male">
+          <label for="male">Male</label><br>
+          <input type="radio" id="female" name="gender" value="Female">
+          <label for="female">Female</label><br><br>
+
+        <input type="text" placeholder="Phone Number" name="phoneNum" id="phoneNum"><br><br>
+        <input type="email" placeholder="Email" name="email" id="email"><br><br>
+        <input type="submit" value="Submit" name="submitBtn" id="submitBtn">
+    </form>
+
+</body>
+
+</html>
