@@ -59,3 +59,5 @@ def Home(request):
         return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'})
 
 
+def ManageAppointmentPage(request):
+    return render(request, 'ManageAppointment.html')

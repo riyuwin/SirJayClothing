@@ -68,8 +68,7 @@ def register_user(request):
             #return redirect('/customer_add_customer')  # Replace '/appointment.html' with your desired URL
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+ 
 @api_view(['POST'])
 def user_login(request):
     if request.method == 'POST':
@@ -89,12 +88,16 @@ def user_login(request):
         if user:
             login(request, user)  # Set the session for the user
             token, _ = Token.objects.get_or_create(user=user)
-            # Redirect to index.html with a token query parameter
-            #return Response({'token': token.key}, status=status.HTTP_200_OK)
-            return redirect(f'/') # Back to home
+
+            # Check if user is superuser or admin
+            if user.is_superuser:
+                # Redirect to admin dashboard or specific URL for superuser
+                return redirect('/admin/')  # Example redirect to admin dashboard
+            else:
+                # Redirect to index.html with a token query parameter for normal users
+                return redirect(f'/?token={token.key}')
 
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-        
 
 @api_view(['POST'])
 #@permission_classes([IsAuthenticated])
