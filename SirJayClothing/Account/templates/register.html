@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+</head>
+<body>
+    <h1>Registration Page</h1>
+    
+    <form method="POST" action="/api/auth/register/">
+        {% csrf_token %}
+    
+        <h3 id="accountDetailsText">Account Details</h3>
+        <input type="text" placeholder="Username" id="username" name="username" required/><br><br>
+        <input type="email" placeholder="Email" id="email" name="email" required/><br><br>
+        <input type="password" placeholder="Password" id="password" name="password" required/><br><br>
+
+        
+        <h3 id="personalText">Personal Information Details</h3>
+        <input type="text" placeholder="First Name" name="fname" id="fname"><br><br>
+        <input type="text" placeholder="Middle Name" name="mname" id="mname"><br><br>
+        <input type="text" placeholder="Last Name" name="lname" id="lname"><br>
+
+        <p>Gender:</p>
+          <input type="radio" id="male" name="gender" value="Male">
+          <label for="male">Male</label><br>
+          <input type="radio" id="female" name="gender" value="Female">
+          <label for="female">Female</label><br><br>
+
+        <input type="text" placeholder="Phone Number" name="phoneNum" id="phoneNum"><br><br> 
+
+        <input type="submit" value="Submit" name="submitBtn" id="submitBtn">
+        <!-- <input type="button" value="Next" id="nextBtn"/> -->
+     
+    </form>
+     
+</body>
+</html>

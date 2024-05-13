@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success</title>
+</head>
+<body>
+    
+    <script>
+        // Check if the URL has a token parameter (indicating successful save)
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        if (token) {
+            alert('Appointment saved successfully!');
+            window.location.href = '/';  // Redirect to the homepage
+        }
+    </script>
+
+</body>
+</html>
