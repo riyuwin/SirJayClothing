@@ -33,5 +33,7 @@ urlpatterns = [
     path('account_registration/', views.insert_customer_view, name='account_registration'),
 
     path('insert_necessary_items/', views.insert_necessary_items, name='insert_necessary_items'),
+
     path('insert_appointment/', views.insert_appointment, name='insert_appointment'),
+    path('delete_appointment/', views.delete_appointment, name='delete_appointment'),
 ]

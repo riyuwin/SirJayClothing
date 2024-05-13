@@ -103,6 +103,8 @@ def insert_customer_view(request):
 def insert_necessary_items(request):
     if request.method == 'POST':
         try:
+             
+
             # Get form data
             appointment_selected_id = request.POST.get('appointmentselectedId')
             product_qty = int(request.POST.get('productQty'))
@@ -137,9 +139,10 @@ def insert_necessary_items(request):
                 # Update productQty by subtracting product_qty
                 product_instance.productQty -= product_qty
                 product_instance.save()  # Save the updated quantity
+                url_id = request.GET.get('id')   
 
                 # Return success response
-                return redirect('/admin_site/appointment')  # Replace with your desired URL
+                return redirect(f'/admin_site/appointment_details?id={appointment_selected_id}')  # Replace with your desired URL
 
             else:
                 # Return error response if quantity is insufficient
@@ -190,30 +193,16 @@ def insert_appointment(request):
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
     
-
-""" @csrf_exempt
-def insert_appointment(request):
-    if request.method == 'POST':
-        # Get form data
-        appoinmentDate = request.POST.get('date')
-        appointmentTime = request.POST.get('time')
-        appointmentNotes = request.POST.get('notes') 
  
+@csrf_exempt
+def delete_appointment(request):
+    if request.method == 'POST':  
+        # Get form data
+        appointmentID = request.POST.get('appointmentID') 
 
-        # Save customer data to the database
-        appoinment = Appointment.objects.create(
-            AppointmentDate=appoinmentDate,
-            AppointmentTime=appointmentTime,
-            CustomerNotes=appointmentNotes, 
-            CustomerNotes='Pending',
-             
-        )
 
-        # Return response
-        #return JsonResponse({'message': 'Client_Site inserted successfully.'}, status=201)
-
-        return redirect('/customer_add_customer')  # Replace '/appointment.html' with your desired URL
-
-    else:
-        return JsonResponse({'error': 'Invalid request method.'}, status=400)
-  """
+        obj_to_delete = Appointment.objects.get(id=appointmentID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete.delete()
+            
+        # Redirect to the desired URL with the token as a query parameter
+        return redirect(f'/admin_site/manage_appointment/') 
