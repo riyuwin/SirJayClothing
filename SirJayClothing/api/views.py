@@ -11,6 +11,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+from rest_framework.authtoken.models import Token
+
 class AccountList(generics.ListCreateAPIView):
     serializer_class = AccountSerializer
     queryset = Account.objects.all()
@@ -95,36 +97,7 @@ def insert_customer_view(request):
 
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-
-'''@csrf_exempt
-def insert_customer_view(request):
-    if request.method == 'POST':
-        # Get form data
-        fname = request.POST.get('fname')
-        mname = request.POST.get('mname')
-        lname = request.POST.get('lname')
-        gender = request.POST.get('gender')
-        phoneNum = request.POST.get('phoneNum')
-        email = request.POST.get('email')
-
-        # Save customer data to the database
-        customer = Customer.objects.create(
-            customerFname=fname,
-            customerMname=mname,
-            customerLname=lname,
-            customerGender=gender,
-            customerPhone=phoneNum,
-            customerEmail=email
-        )
-
-        # Return response
-        #return JsonResponse({'message': 'Client_Site inserted successfully.'}, status=201)
-
-        return redirect('/customer_add_customer')  # Replace '/appointment.html' with your desired URL
-
-    else:
-        return JsonResponse({'error': 'Invalid request method.'}, status=400)
-'''
+ 
 
 @csrf_exempt
 def insert_necessary_items(request):
@@ -178,3 +151,69 @@ def insert_necessary_items(request):
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+@csrf_exempt
+def insert_appointment(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Get form data
+            appointmentDate = request.POST.get('date')
+            appointmentTime = request.POST.get('time')
+            appointmentNotes = request.POST.get('notes') 
+
+            # Get or create token for the user
+            token, _ = Token.objects.get_or_create(user=user)
+
+            # Get the customer using the token
+            try:
+                customer = Customer.objects.get(accountToken=token)
+            except Customer.DoesNotExist:
+                return JsonResponse({'error': 'Customer not found.'}, status=404)
+
+            # Save appointment data to the database
+            appointment = Appointment.objects.create(
+                appointmentDate=appointmentDate,
+                appointmentTime=appointmentTime,
+                customerNotes=appointmentNotes, 
+                customersName=customer,  # Pass the customer instance directly
+            )
+
+            # Redirect to the desired URL with the token as a query parameter
+            return redirect(f'/success_page/?token={token.key}')
+
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+    
+
+""" @csrf_exempt
+def insert_appointment(request):
+    if request.method == 'POST':
+        # Get form data
+        appoinmentDate = request.POST.get('date')
+        appointmentTime = request.POST.get('time')
+        appointmentNotes = request.POST.get('notes') 
+ 
+
+        # Save customer data to the database
+        appoinment = Appointment.objects.create(
+            AppointmentDate=appoinmentDate,
+            AppointmentTime=appointmentTime,
+            CustomerNotes=appointmentNotes, 
+            CustomerNotes='Pending',
+             
+        )
+
+        # Return response
+        #return JsonResponse({'message': 'Client_Site inserted successfully.'}, status=201)
+
+        return redirect('/customer_add_customer')  # Replace '/appointment.html' with your desired URL
+
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+  """

@@ -91,7 +91,7 @@ def user_login(request):
             token, _ = Token.objects.get_or_create(user=user)
             # Redirect to index.html with a token query parameter
             #return Response({'token': token.key}, status=status.HTTP_200_OK)
-            return redirect(f'/account/') # Back to home
+            return redirect(f'/') # Back to home
 
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         

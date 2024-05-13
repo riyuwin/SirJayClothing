@@ -2,6 +2,10 @@ from django.urls import path
 from Client_Site import views
 
 urlpatterns = [
-    path('add_customer/', views.LaunchAddCustomer, name='CustomerPage'),
+    # Notifier
+    path('success_page/', views.SuccessPage, name='success_page'),
+ 
+    # Client Interface
+    path('appointment_form/', views.LaunchAppointmentForm, name='appointment_form'),
     path('', views.LaunchIndex, name='index'),
 ]

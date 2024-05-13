@@ -30,7 +30,8 @@ urlpatterns = [
     path('inventory/category/', CategoryList.as_view()),
     path('inventory/category/<int:pk>/', CategoryDetail.as_view()),
 
-    path('insert_necessary_items/', views.insert_necessary_items, name='insert_necessary_items'),
-
     path('account_registration/', views.insert_customer_view, name='account_registration'),
+
+    path('insert_necessary_items/', views.insert_necessary_items, name='insert_necessary_items'),
+    path('insert_appointment/', views.insert_appointment, name='insert_appointment'),
 ]
