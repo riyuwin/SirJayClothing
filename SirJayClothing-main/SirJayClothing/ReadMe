@@ -1,0 +1,3 @@
+// If virtual environment is not working
+
+Set-ExecutionPolicy RemoteSigned -Scope Process
