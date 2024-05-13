@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Logout</title>
+</head>
+<body>
+    <h1>User Logout</h1>
+
+    <h3>{{ username }} asfsa</h3>
+    {% if not logged_in %}
+        <p>Please <a href="{% url 'login_page' %}">login</a> to access the content.</p>
+    {% else %}
+        <p>Welcome, {{ username }}!</p>
+
+        <h3>{{ user_token }}</h3>
+
+        <p>Click the button below to log out:</p>
+        <form id="logoutForm" action="/api/auth/logout/" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="Authorization" value="Token {{ user_token }}">
+            <button type="submit">Logout</button>
+        </form>
+
+    {% endif %} 
+
+    
+
+</body>
+</html>
