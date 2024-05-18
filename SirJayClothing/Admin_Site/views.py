@@ -115,3 +115,162 @@ def AppointmentDetailsPage(request):
         # Handle the case when the API request fails (e.g., return an error message)
         return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
 
+
+def ProductCategoriesPage(request): 
+     # Assuming your API endpoint is '/api/endpoint/' (replace with your actual endpoint)
+    appointment_api_url = request.build_absolute_uri('/api/appointment/appointment_details/')
+    customers_api_url = request.build_absolute_uri('/api/customer/')
+    necessaryitems_api_url = request.build_absolute_uri('/api/inventory/necessaryitems/')
+    category_api_url = request.build_absolute_uri('/api/inventory/category/')
+
+    # Make a GET request to the API endpoint
+    appointment_response = requests.get(appointment_api_url)
+    customer_response = requests.get(customers_api_url)
+    necessaryitems_response = requests.get(necessaryitems_api_url)
+    category_response = requests.get(category_api_url)
+
+    # get url parse
+    id_value = request.GET.get('id')
+
+    # Check if the request was successful (status code 200)
+    if appointment_response.status_code == 200:
+        # Parse the JSON response
+        appointment_data = appointment_response.json()
+        customer_data = customer_response.json()
+        necessaryitems_data = necessaryitems_response.json()
+        category_data = category_response.json()
+
+        #result = my_task.delay(3, 5)
+
+        # Pass the data to the template for rendering
+        return render(request, 'supply_type.html', {'appointments': appointment_data, 'customers': customer_data, 'necessaryitems': necessaryitems_data, 'categories': category_data})
+    else:
+        # Handle the case when the API request fails (e.g., return an error message)
+        return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
+
+
+def SupplierPage(request): 
+     # Assuming your API endpoint is '/api/endpoint/' (replace with your actual endpoint)
+    supplier_api_url = request.build_absolute_uri('/api/inventory/supplier/') 
+
+    # Make a GET request to the API endpoint
+    supplier_response = requests.get(supplier_api_url) 
+ 
+
+    # Check if the request was successful (status code 200)
+    if supplier_response.status_code == 200:
+        # Parse the JSON response
+        supplier_data = supplier_response.json() 
+
+        #result = my_task.delay(3, 5)
+
+        # Pass the data to the template for rendering
+        return render(request, 'suppliers.html', {'suppliers': supplier_data})
+    else:
+        # Handle the case when the API request fails (e.g., return an error message)
+        return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
+
+def ServicesPage(request): 
+     # Assuming your API endpoint is '/api/endpoint/' (replace with your actual endpoint)
+    product_api_url = request.build_absolute_uri('/api/inventory/product/') 
+    supplier_api_url = request.build_absolute_uri('/api/inventory/supplier/')
+    category_api_url = request.build_absolute_uri('/api/inventory/category/') 
+    services_api_url = request.build_absolute_uri('/api/inventory/services/') 
+
+    # Make a GET request to the API endpoint
+    product_response = requests.get(product_api_url) 
+    supplier_response = requests.get(supplier_api_url) 
+    category_response = requests.get(category_api_url) 
+    services_response = requests.get(services_api_url) 
+ 
+
+    # Check if the request was successful (status code 200)
+    if supplier_response.status_code == 200:
+        # Parse the JSON response
+        product_data = product_response.json() 
+        supplier_data = supplier_response.json() 
+        category_data = category_response.json() 
+        services_data = services_response.json() 
+
+        #result = my_task.delay(3, 5)
+
+        # Pass the data to the template for rendering
+        return render(request, 'services.html', {'suppliers': supplier_data, 'products': product_data, 'categories': category_data, 'services': services_data})
+    else:
+        # Handle the case when the API request fails (e.g., return an error message)
+        return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
+
+def InventoryPage(request): 
+     # Assuming your API endpoint is '/api/endpoint/' (replace with your actual endpoint)
+    product_api_url = request.build_absolute_uri('/api/inventory/product/') 
+    supplier_api_url = request.build_absolute_uri('/api/inventory/supplier/')
+    category_api_url = request.build_absolute_uri('/api/inventory/category/') 
+
+    # Make a GET request to the API endpoint
+    product_response = requests.get(product_api_url) 
+    supplier_response = requests.get(supplier_api_url) 
+    category_response = requests.get(category_api_url) 
+ 
+
+    # Check if the request was successful (status code 200)
+    if supplier_response.status_code == 200:
+        # Parse the JSON response
+        product_data = product_response.json() 
+        supplier_data = supplier_response.json() 
+        category_data = category_response.json() 
+
+        #result = my_task.delay(3, 5)
+
+        # Pass the data to the template for rendering
+        return render(request, 'inventory.html', {'suppliers': supplier_data, 'products': product_data, 'categories': category_data})
+    else:
+        # Handle the case when the API request fails (e.g., return an error message)
+        return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
+
+
+def CustomerPage(request): 
+     # Assuming your API endpoint is '/api/endpoint/' (replace with your actual endpoint)
+    customer_api_url = request.build_absolute_uri('/api/customer/')   
+
+    # Make a GET request to the API endpoint
+    customer_response = requests.get(customer_api_url)  
+ 
+
+    # Check if the request was successful (status code 200)
+    if customer_response.status_code == 200:
+        # Parse the JSON response
+        customer_data = customer_response.json()  
+
+        #result = my_task.delay(3, 5)
+
+        # Pass the data to the template for rendering
+        return render(request, 'customer.html', { 'customers': customer_data})
+    else:
+        # Handle the case when the API request fails (e.g., return an error message)
+        return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
+
+
+def CustomerDetailsPage(request): 
+     # Assuming your API endpoint is '/api/endpoint/' (replace with your actual endpoint)
+    customer_api_url = request.build_absolute_uri('/api/customer/')   
+    appointment_api_url = request.build_absolute_uri('/api/appointment/appointment_details/')   
+
+    # Make a GET request to the API endpoint
+    customer_response = requests.get(customer_api_url)
+    appointment_response = requests.get(appointment_api_url)    
+ 
+
+    # Check if the request was successful (status code 200)
+    if customer_response.status_code == 200:
+        # Parse the JSON response
+        customer_data = customer_response.json()  
+        appointment_data = appointment_response.json() 
+
+        #result = my_task.delay(3, 5)
+
+        # Pass the data to the template for rendering
+        return render(request, 'customer_details.html', { 'customers': customer_data, 'appointments': appointment_data})
+    else:
+        # Handle the case when the API request fails (e.g., return an error message)
+        return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
+

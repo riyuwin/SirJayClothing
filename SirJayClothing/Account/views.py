@@ -28,4 +28,4 @@ def loginPage(request):
 
 
 def registerPage(request): 
-    return render(request, "register.html" )
+    return render(request, "registration.html" )

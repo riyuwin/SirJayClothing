@@ -27,6 +27,7 @@
     }
     input[type="date"],
     input[type="time"],
+    select,
     textarea {
         width: calc(100% - 16px);
         padding: 8px;
@@ -51,22 +52,32 @@
 </head>
 <body>
 
-<div id="form-container">
-    <h2 style="text-align: center;">Appointment Form</h2>
-    <form id="appointmentForm" action="/api/insert_appointment/" method="POST">
-        <label for="date">Date (Monday to Friday):</label>
-        <input type="date" id="date" name="date" required><br>
-        
-        <label for="time">Time (8am to 5pm):</label>
-        <input type="time" id="time" name="time" required min="08:00" max="17:00"><br>
-        
-        <label for="notes">Customer Notes:</label>
-        <textarea id="notes" name="notes" rows="4" cols="50"></textarea><br>
-        
-        <button type="submit">Submit</button>
-    </form>
-</div>
-
+    <div id="form-container">
+        <h2 style="text-align: center;">Appointment Form</h2>
+        <form id="appointmentForm" action="{% url 'insert_appointment' %}" method="POST">
+            {% csrf_token %}
+            
+            <label for="date">Date (Monday to Friday):</label>
+            <input type="date" id="date" name="date" required><br>
+            
+            <label for="time">Time (8am to 5pm):</label>
+            <input type="time" id="time" name="time" required min="08:00" max="17:00"><br>
+            
+            <label for="servicesSelector">Select Services:</label>
+            <select id="servicesSelector" name="servicesSelector" required>
+                <option value="">--- Select Service ---</option>
+                {% for service in services %}
+                    <option value="{{ service.id }}">{{ service.servicesName }}</option>
+                {% endfor %}
+            </select><br>
+            
+            <label for="notes">Customer Notes:</label>
+            <textarea id="notes" name="notes" rows="4" cols="50"></textarea><br>
+            
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    
 <script>
     
     document.getElementById("appointmentForm").addEventListener("submit", function(event) {

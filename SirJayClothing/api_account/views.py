@@ -47,11 +47,13 @@ def register_user(request):
             }
 
             # Get form data
-            fname = request.POST.get('fname')
-            mname = request.POST.get('mname')
-            lname = request.POST.get('lname')
-            gender = request.POST.get('gender')
-            phoneNum = request.POST.get('phoneNum')
+            fname = request.POST.get('firstName')
+            mname = request.POST.get('middleName')
+            lname = request.POST.get('lastName')
+            birthdate = request.POST.get('birthdate') 
+            gender = request.POST.get('genderSelector')  
+            phoneNum = request.POST.get('contactNumber') 
+            address = request.POST.get('address')
 
             # Save customer data to the database
             customer = Customer.objects.create(
@@ -61,11 +63,13 @@ def register_user(request):
                 customerGender=gender,
                 customerPhone=phoneNum,
                 customerEmail=email,
+                customerBirthdate=birthdate,
+                customerAddress=address,
                 accountToken=token.key,
             )
 
-            return Response(response_data, status=status.HTTP_201_CREATED)
-            #return redirect('/customer_add_customer')  # Replace '/appointment.html' with your desired URL
+            #return Response(response_data, status=status.HTTP_201_CREATED)
+            return redirect('/account/login_page/')  # Replace '/appointment.html' with your desired URL
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
  
@@ -92,12 +96,13 @@ def user_login(request):
             # Check if user is superuser or admin
             if user.is_superuser:
                 # Redirect to admin dashboard or specific URL for superuser
-                return redirect('/admin/')  # Example redirect to admin dashboard
+                return redirect('/admin_site/manage_customer/')  # Example redirect to admin dashboard
             else:
                 # Redirect to index.html with a token query parameter for normal users
                 return redirect(f'/?token={token.key}')
 
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        #return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        return redirect(f'/api/auth/failed_template/')
 
 @api_view(['POST'])
 #@permission_classes([IsAuthenticated])
@@ -108,3 +113,6 @@ def user_logout(request):
         return redirect(f'/account/login_page/') # Back to home
  
  
+def FailedPage(request):  
+    return render(request, 'failed_template.html', {'message': 'Invalid credentials'}) 
+

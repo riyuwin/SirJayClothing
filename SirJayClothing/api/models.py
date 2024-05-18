@@ -29,6 +29,8 @@ class Customer(models.Model):
     customerGender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='Male')
     customerPhone = models.CharField(max_length=50)
     customerEmail = models.EmailField(max_length=254)
+    customerBirthdate = models.DateField()
+    customerAddress = models.CharField(max_length=500)
     date_added = models.DateField(auto_now_add=True)
 
     accountToken = models.CharField(max_length=500, blank=True, null=True)  # Make categoryDesc optional
@@ -37,11 +39,21 @@ class Customer(models.Model):
         return f'{self.customerLname}, {self.customerFname} {self.customerMname}'
 
 
+class Services(models.Model):
+    servicesName = models.CharField(max_length=500)
+    servicesPrice = models.IntegerField() 
+    date_added = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.servicesName} - {self.servicesPrice}'
+
+
 class Appointment(models.Model):
     customersName = models.ForeignKey(Customer, on_delete=models.CASCADE)
 
     appointmentDate = models.DateField()
     appointmentTime = models.TimeField()
+    appointmentServices = models.ForeignKey(Services, on_delete=models.CASCADE)
     customerNotes = models.CharField(max_length=200, blank=True, null=True)  # Make categoryDesc optional
 
     STATUS_CHOICES = (
@@ -59,7 +71,8 @@ class Appointment(models.Model):
 class Supplier(models.Model):
     supplierName = models.CharField(max_length=100)
     contactNumber = models.CharField(max_length=100)
-    supplierEmail = models.EmailField()
+    supplierEmail = models.EmailField() 
+    supplierAddress = models.CharField(max_length=500)
     date_added = models.DateField(auto_now_add=True)
 
     def __str__(self):
@@ -74,7 +87,7 @@ class Category(models.Model):
         return self.categoryName
 
 
-class Product(models.Model):
+class Supply(models.Model):
     supplierName = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     productCategory = models.ForeignKey(Category, on_delete=models.CASCADE)
 
@@ -105,7 +118,7 @@ class Product(models.Model):
 
 
 class NecessaryItems(models.Model):
-    productName = models.ForeignKey(Product, on_delete=models.CASCADE)
+    productName = models.ForeignKey(Supply, on_delete=models.CASCADE)
     productQty = models.IntegerField()
     appointmentName = models.ForeignKey(Appointment, on_delete=models.CASCADE)
 

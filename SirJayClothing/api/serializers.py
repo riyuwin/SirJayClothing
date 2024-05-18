@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Account, Customer, Appointment, Product, NecessaryItems, Supplier, Category
+from .models import Account, Customer, Appointment, Supply, NecessaryItems, Supplier, Category, Services
 # This section converts the model object into JSON format, at vice versa
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
+        model = Supply
         fields = ('__all__')
 
 class NecessaryItemsSerializer(serializers.ModelSerializer):
@@ -35,4 +35,10 @@ class SupplierSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
+        fields = ('__all__')
+
+
+class ServicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Services
         fields = ('__all__')

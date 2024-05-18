@@ -1,11 +1,11 @@
 import time
 from django.shortcuts import render, redirect
-
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 
-from .models import Account, Customer, Appointment, Product, NecessaryItems, Supplier, Category
+from .models import Account, Customer, Appointment, Supply, NecessaryItems, Supplier, Category, Services
 from .serializers import AccountSerializer, CustomerSerializer, ProductSerializer, \
-    NecessaryItemsSerializer, SupplierSerializer, CategorySerializer, AppointmentSerializer  # Importing serializers for your models
+    NecessaryItemsSerializer, SupplierSerializer, CategorySerializer, AppointmentSerializer, ServicesSerializer  # Importing serializers for your models
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -39,11 +39,11 @@ class AppointmentDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class ProductList(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
+    queryset = Supply.objects.all()
 
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
+    queryset = Supply.objects.all()
 
 class NecessaryItemsList(generics.ListCreateAPIView):
     serializer_class = NecessaryItemsSerializer
@@ -68,6 +68,16 @@ class CategoryList(generics.ListCreateAPIView):
 class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
+
+
+class ServicesList(generics.ListCreateAPIView):
+    serializer_class = ServicesSerializer
+    queryset = Services.objects.all()
+
+class ServicesDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ServicesSerializer
+    queryset = Services.objects.all()
+
 
 @csrf_exempt
 def insert_customer_view(request):
@@ -111,7 +121,7 @@ def insert_necessary_items(request):
             product_id = int(request.POST.get('productId'))
 
             # Get the Product instance corresponding to the productId
-            product_instance = Product.objects.get(id=product_id)
+            product_instance = Supply.objects.get(id=product_id)
             appointment_instance = Appointment.objects.get(id=appointment_selected_id)
 
             if product_instance.productQty >= product_qty:
@@ -148,7 +158,7 @@ def insert_necessary_items(request):
                 # Return error response if quantity is insufficient
                 return JsonResponse({'message': 'Insufficient product quantity.'}, status=400)
 
-        except Product.DoesNotExist:
+        except Supply.DoesNotExist:
             return JsonResponse({'error': 'Product does not exist.'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
@@ -164,36 +174,51 @@ def insert_appointment(request):
         # Check if the user is authenticated
         if user.is_authenticated:
             # Get form data
-            appointmentDate = request.POST.get('date')
-            appointmentTime = request.POST.get('time')
-            appointmentNotes = request.POST.get('notes') 
+            services_selector = request.POST.get('servicesSelector')
+            appointment_date = request.POST.get('date')
+            appointment_time = request.POST.get('time')
+            appointment_notes = request.POST.get('notes') 
+
+            # Validate the received data
+            if not all([services_selector, appointment_date, appointment_time]):
+                return JsonResponse({'error': 'Missing required fields.'}, status=400)
 
             # Get or create token for the user
             token, _ = Token.objects.get_or_create(user=user)
 
-            # Get the customer using the token
             try:
-                customer = Customer.objects.get(accountToken=token)
+                # Get the customer using the token key (not the Token object)
+                customer = Customer.objects.get(accountToken=token.key)
+
+                # Get the selected service
+                service = Services.objects.get(id=services_selector)
+
+                # Default status
+                default_status = 'Pending'
+
+                # Save appointment data to the database
+                appointment = Appointment.objects.create(
+                    appointmentDate=appointment_date,
+                    appointmentTime=appointment_time,
+                    customerNotes=appointment_notes,  
+                    appointmentStatus=default_status,
+                    customersName=customer,  # This should be the customer object, not customer.id
+                    appointmentServices=service,
+                )
+
+                # Redirect to the desired URL with the token as a query parameter
+                return redirect(f'/success_page/?token={token.key}')
+
             except Customer.DoesNotExist:
                 return JsonResponse({'error': 'Customer not found.'}, status=404)
-
-            # Save appointment data to the database
-            appointment = Appointment.objects.create(
-                appointmentDate=appointmentDate,
-                appointmentTime=appointmentTime,
-                customerNotes=appointmentNotes, 
-                customersName=customer,  # Pass the customer instance directly
-            )
-
-            # Redirect to the desired URL with the token as a query parameter
-            return redirect(f'/success_page/?token={token.key}')
+            except Services.DoesNotExist:
+                return JsonResponse({'error': 'Service not found.'}, status=404)
 
         else:
             return JsonResponse({'error': 'User is not authenticated.'}, status=401)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
     
- 
 @csrf_exempt
 def delete_appointment(request):
     if request.method == 'POST':  
@@ -206,3 +231,369 @@ def delete_appointment(request):
             
         # Redirect to the desired URL with the token as a query parameter
         return redirect(f'/admin_site/manage_appointment/') 
+
+
+@csrf_exempt
+def delete_categories(request):
+    if request.method == 'POST':  
+        # Get form data
+        categoryID = request.POST.get('deletecategoryID')  
+
+        obj_to_delete = Category.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete.delete()
+            
+        # Redirect to the desired URL with the token as a query parameter
+        return redirect(f'/admin_site/product_categories/') 
+    
+
+@csrf_exempt
+def insert_product_categories(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Get form data
+            productCategoriesName = request.POST.get('productCategory')
+            productDescription = request.POST.get('description') 
+
+            # Get or create token for the user
+            token, _ = Token.objects.get_or_create(user=user)
+ 
+            # Save appointment data to the database
+            category = Category.objects.create(
+                categoryName=productCategoriesName,
+                categoryDesc=productDescription, 
+            )
+
+            # Redirect to the desired URL with the token as a query parameter
+            return redirect(f'/admin_site/product_categories/')
+
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+@csrf_exempt
+def update_product_categories(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Get form data
+            editcategoryID = request.POST.get('editcategoryID')
+            productCategory = request.POST.get('productCategory')
+            productDescription = request.POST.get('description') 
+
+            # Get the existing category object or return 404 if not found
+            category = get_object_or_404(Category, id=editcategoryID)
+
+            # Update category attributes
+            category.categoryName = productCategory
+            category.categoryDesc = productDescription
+            category.save()
+
+            # Redirect or return success response
+            return redirect(f'/admin_site/product_categories/')
+            #return JsonResponse({'success': 'Category updated successfully.'})
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+@csrf_exempt
+def insert_supplier(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Get form data
+            supplierName = request.POST.get('supplierName')
+            contactNumber = request.POST.get('contactNumber') 
+            emailAdd = request.POST.get('emailAdd') 
+            address = request.POST.get('supplierAddress') 
+
+            # Get or create token for the user
+            token, _ = Token.objects.get_or_create(user=user)
+ 
+            # Save appointment data to the database
+            supplier = Supplier.objects.create(
+                supplierName=supplierName,
+                contactNumber=contactNumber, 
+                supplierEmail=emailAdd, 
+                supplierAddress=address, 
+            )
+
+            # Redirect to the desired URL with the token as a query parameter
+            return redirect(f'/admin_site/manage_supplier/')
+
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+@csrf_exempt
+def update_supplier(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Get form data
+            suppliercategoryID = request.POST.get('suppliercategoryID')
+            supplierName = request.POST.get('supplierName')
+            contactNumber = request.POST.get('contactNumber')
+            emailAdd = request.POST.get('emailAdd') 
+            address = request.POST.get('supplierAddress') 
+
+            # Get the existing category object or return 404 if not found
+            category = get_object_or_404(Supplier, id=suppliercategoryID)
+
+            # Update category attributes 
+            category.supplierName = supplierName
+            category.contactNumber = contactNumber
+            category.supplierEmail = emailAdd
+            category.supplierAddress = address
+            category.save()
+
+            # Redirect or return success response
+            return redirect(f'/admin_site/manage_supplier/')
+            #return JsonResponse({'success': 'Category updated successfully.'})
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+@csrf_exempt
+def delete_supplier(request):
+    if request.method == 'POST':  
+        # Get form data
+        categoryID = request.POST.get('deletecategoryID')  
+
+        obj_to_delete = Supplier.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete.delete()
+            
+        # Redirect to the desired URL with the token as a query parameter
+        return redirect(f'/admin_site/manage_supplier/') 
+
+@csrf_exempt
+def insert_product(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Get form data
+            productName = request.POST.get('productName')
+            productQty = request.POST.get('productQty') 
+            productUnit = request.POST.get('productUnit') 
+            productPrice = request.POST.get('productPrice') 
+            productCategory = request.POST.get('productCategory') 
+            supplierSelector = request.POST.get('supplierSelector') 
+
+            # Get or create token for the user
+            token, _ = Token.objects.get_or_create(user=user)
+
+            # Assuming Supplier model has a field named 'id'
+            supplier_id = int(supplierSelector)  # Assuming supplierSelector is the ID of the Supplier
+            supplier_instance = Supplier.objects.get(id=supplier_id)
+
+            category_id = int(productCategory)  # Assuming productCategory is the ID of the Category
+            category_instance = Category.objects.get(id=category_id)
+ 
+            product = Supply.objects.create(
+                productName=productName,
+                productQty=productQty,
+                productUnit=productUnit,
+                productPrice=productPrice,
+                productCategory=category_instance,  # Assign the Category instance, not the ID or name
+                supplierName=supplier_instance,
+            )
+
+            # Redirect to the desired URL with the token as a query parameter
+            return redirect(f'/admin_site/manage_product/')
+
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+@csrf_exempt
+def update_product(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Get form data
+            productId = request.POST.get('productIDSelected')  # Corrected variable name
+            productName = request.POST.get('productName')
+            productQty = request.POST.get('productQty') 
+            productUnit = request.POST.get('productUnit') 
+            productPrice = request.POST.get('productPrice') 
+            productCategory = request.POST.get('productCategory') 
+            supplierSelector = request.POST.get('supplierSelector')    
+
+            # Assuming Supplier model has a field named 'id'
+            supplier_id = int(supplierSelector)  # Assuming supplierSelector is the ID of the Supplier
+            supplier_instance = Supplier.objects.get(id=supplier_id)
+
+            category_id = int(productCategory)  # Assuming productCategory is the ID of the Category
+            category_instance = Category.objects.get(id=category_id)
+            
+            print(productId)
+
+            # Get the existing product object or return 404 if not found
+            supply = get_object_or_404(Supply, id=productId)
+
+            # Update product attributes 
+            supply.productName = productName
+            supply.productQty = productQty
+            supply.productUnit = productUnit
+            supply.productPrice = productPrice
+            supply.supplierName = supplier_instance
+            supply.productCategory = category_instance
+            supply.save()
+
+            # Redirect or return success response
+            return redirect('/admin_site/manage_product/')  # Redirect URL corrected
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+    
+
+@csrf_exempt
+def delete_product(request):
+    if request.method == 'POST':  
+        # Get form data
+        categoryID = request.POST.get('deletecategoryID')  
+
+        obj_to_delete = Supply.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete.delete()
+            
+        # Redirect to the desired URL with the token as a query parameter
+        return redirect(f'/admin_site/manage_product/') 
+    
+
+@csrf_exempt
+def delete_customer(request):
+    if request.method == 'POST':  
+        # Get form data
+        categoryID = request.POST.get('deletecategoryID')  
+
+        obj_to_delete = Supply.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete.delete()
+            
+        # Redirect to the desired URL with the token as a query parameter
+        return redirect(f'/admin_site/manage_customer/') 
+
+
+@csrf_exempt
+def insert_services(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Get form data
+            Name = request.POST.get('serviceName')
+            Price = request.POST.get('servicePrice')  
+
+            # Get or create token for the user
+            token, _ = Token.objects.get_or_create(user=user)
+ 
+            # Save appointment data to the database
+            supplier = Services.objects.create(
+                servicesName=Name,
+                servicesPrice=Price,  
+            )
+
+            # Redirect to the desired URL with the token as a query parameter
+            return redirect(f'/admin_site/manage_services/')
+
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+@csrf_exempt
+def update_services(request):
+    if request.method == 'POST':
+        # Get the current user
+        user = request.user
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Get form data
+            serviceId = request.POST.get('servicesIDSelected')  # Corrected variable name
+            name = request.POST.get('serviceName')  # Corrected variable name
+            price = request.POST.get('servicePrice') 
+  
+
+            # Get the existing product object or return 404 if not found
+            services = get_object_or_404(Services, id=serviceId)
+
+            # Update product attributes 
+            services.servicesName = name
+            services.servicesPrice = price 
+            services.save()
+
+            # Redirect or return success response
+            return redirect('/admin_site/manage_services/')  # Redirect URL corrected
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+    
+
+@csrf_exempt
+def delete_services(request):
+    if request.method == 'POST':  
+        # Get form data
+        categoryID = request.POST.get('deletecategoryID')  
+
+        obj_to_delete = Services.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete.delete()
+            
+        # Redirect to the desired URL with the token as a query parameter
+        return redirect(f'/admin_site/manage_services/') 
+
+@csrf_exempt
+def update_appointment_status(request):
+    if request.method == 'POST':
+        user = request.user
+
+        if user.is_authenticated:
+            url_id = request.GET.get('id')
+
+            if not url_id:
+                return JsonResponse({'error': 'ID parameter is missing.'}, status=400)
+
+            status = request.POST.get('status')
+
+            if not status:
+                return JsonResponse({'error': 'Status parameter is missing.'}, status=400)
+
+            appointment = get_object_or_404(Appointment, id=url_id)
+
+            appointment.appointmentStatus = status
+            appointment.save()
+
+            return redirect(f'/admin_site/appointment_details/?id={url_id}')
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
