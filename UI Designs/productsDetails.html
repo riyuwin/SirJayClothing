@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product 1 Details</title>
+    <title>Product Details</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -52,17 +53,94 @@
         }
     </style>
 </head>
+
 <body>
     <div class="product-details-container">
-        <img src="assets/img/pants.jpg" alt="Product 1" class="product-image">
-        <h2 class="product-name">Product 1</h2>
-        <p class="product-price">Php 250.00</p>
-        <div class="product-info">
-            <p>Size: M</p>
-            <p>Fabric: Cotton</p>
-            <p>Price: Php 250.00</p>
-        </div>
+        <img id="product-image" src="" alt="Product Image" class="product-image">
+        <h2 id="product-name" class="product-name"></h2>
+        <p id="product-price" class="product-price"></p>
+        <div id="product-info" class="product-info"></div>
         <a href="services.html">Back to Services</a>
     </div>
+
+    <script>
+        window.onload = function () {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const productId = urlParams.get('product');
+
+            
+            const products = {
+                'product1': {
+                    name: 'CNNHS PANTS',
+                    price: 'Php 250.00',
+                    image: 'assets/img/pants.jpg',
+                    info: 'Size: M<br>Fabric: Cotton<br>Price: Php 250.00'
+                },
+                'product2': {
+                    name: 'CNNHS White Polo',
+                    price: 'Php 250.00',
+                    image: 'assets/img/polo.jpg',
+                    info: 'Size: L<br>Fabric: Polyester<br>Price: Php 250.00'
+                },
+                'product3': {
+                    name: 'CNNHS Jogging Pants',
+                    price: 'Php 250.00',
+                    image: 'assets/img/jogging_pants.jpg',
+                    info: 'Size: L<br>Fabric: Polyester<br>Price: Php 250.00'
+                },
+                'product4': {
+                    name: 'CNNHS PANTS',
+                    price: 'Php 250.00',
+                    image: 'assets/img/pants.jpg',
+                    info: 'Size: M<br>Fabric: Cotton<br>Price: Php 250.00'
+                },
+                'product5': {
+                    name: 'CNNHS White Polo',
+                    price: 'Php 250.00',
+                    image: 'assets/img/polo.jpg',
+                    info: 'Size: L<br>Fabric: Polyester<br>Price: Php 250.00'
+                },
+                'product6': {
+                    name: 'CNNHS Jogging Pants',
+                    price: 'Php 250.00',
+                    image: 'assets/img/jogging_pants.jpg',
+                    info: 'Size: L<br>Fabric: Polyester<br>Price: Php 250.00'
+                },
+                'product7': {
+                    name: 'CNNHS PANTS',
+                    price: 'Php 250.00',
+                    image: 'assets/img/pants.jpg',
+                    info: 'Size: M<br>Fabric: Cotton<br>Price: Php 250.00'
+                },
+                'product8': {
+                    name: 'CNNHS White Polo',
+                    price: 'Php 250.00',
+                    image: 'assets/img/polo.jpg',
+                    info: 'Size: L<br>Fabric: Polyester<br>Price: Php 250.00'
+                },
+                'product9': {
+                    name: 'CNNHS Jogging Pants',
+                    price: 'Php 250.00',
+                    image: 'assets/img/jogging_pants.jpg',
+                    info: 'Size: L<br>Fabric: Polyester<br>Price: Php 250.00'
+                },
+
+            };
+
+            const product = products[productId];
+
+            if (product) {
+                document.getElementById('product-name').innerText = product.name;
+                document.getElementById('product-price').innerText = product.price;
+                document.getElementById('product-image').src = product.image;
+                document.getElementById('product-info').innerHTML = product.info;
+            } else {
+                // Handle invalid product ID
+                document.getElementById('product-name').innerText = 'Product Not Found';
+            }
+        };
+    </script>
 </body>
+
 </html>
