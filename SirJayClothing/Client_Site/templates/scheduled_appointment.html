@@ -244,7 +244,7 @@
 
                                         <div class="col-sm-6 d-flex align-items-center justify-content-end">
                                             <div class="search-button"> 
-                                                <button class="btn btn-primary" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#addProduct">+ Add Appointment</button>
+                                                <a class="btn btn-primary"  href="/guest_appointment_form/">+ Add Appointment</a>
                                             </div> 
                                         </div>
                                     </div>
@@ -265,28 +265,30 @@
                                            
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {% for appointment_detail in appointment_details %}
-                                        <tr>
-                                            <td>{{ forloop.counter }}</td>  
-                                                <td>{{ appointment_detail.appointmentDate }}</td>
-                                                <td>{{ appointment_detail.appointmentTime }}</td> 
-                                                <td>{{ appointment_detail.appointmentStatus }}</td>
-                                                {% for service in services %}
-                                                    {% if service.id|stringformat:"s" == appointment_detail.id|stringformat:"s" %} 
-                                                        <td>{{ service.clothOffered }}</td> 
-                                                        <td>{{ service.clothforSchool }}</td>
-                                                    {% endif %}
+                                    <tbody> 
+                                        {% for appointment_detail in appointment_details %} 
+                                            {% if customerid|stringformat:"s" == appointment_detail.customersName|stringformat:"s" %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>  
+                                                    <td>{{ appointment_detail.appointmentDate }}</td>
+                                                    <td>{{ appointment_detail.appointmentTime }}</td> 
+                                                    <td>{{ appointment_detail.appointmentStatus }}</td>
+                                                    {% for service in services %}
+                                                        {% if service.id|stringformat:"s" == appointment_detail.id|stringformat:"s" %} 
+                                                            <td>{{ service.clothOffered }}</td> 
+                                                            <td>{{ service.clothforSchool }}</td>
+                                                        {% endif %}
 
-                                                {% endfor %}
-                                                <td>{{ appointment_detail.appointmentQty }}</td>
-                                                <td>  
-                                                    <a href="/customer_information/?id={{ appointment_detail.id }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
-                                                    <!-- <a href="#" class="edit" title="Edit" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#editProduct" onclick="setEditData('{{ product.id }}', '{{ product.productName }}', '{{ category.id }}', '{{ product.productQty }}', '{{ product.productUnit }}', '{{ product.productPrice }}', '{{ product.supplierName }}')"><i class="material-icons">&#xE254;</i></a> -->
-                                                    <!-- <a href="#" class="delete" title="Delete"  onclick="setDeleteData('{{ product.id }}')"><i class="material-icons">&#xE872;</i></a> -->
-                                                </td>  
-                                           
-                                        </tr>
+                                                    {% endfor %}
+                                                    <td>{{ appointment_detail.appointmentQty }}</td>
+                                                    <td>  
+                                                        <a href="/customer_information/?id={{ appointment_detail.id }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                                                        <!-- <a href="#" class="edit" title="Edit" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#editProduct" onclick="setEditData('{{ product.id }}', '{{ product.productName }}', '{{ category.id }}', '{{ product.productQty }}', '{{ product.productUnit }}', '{{ product.productPrice }}', '{{ product.supplierName }}')"><i class="material-icons">&#xE254;</i></a> -->
+                                                        <!-- <a href="#" class="delete" title="Delete"  onclick="setDeleteData('{{ product.id }}')"><i class="material-icons">&#xE872;</i></a> -->
+                                                    </td>  
+                                            
+                                            </tr>
+                                            {% endif %} 
                                         {% endfor %}
                                          
                                              

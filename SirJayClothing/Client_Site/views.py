@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
 import requests
 
-from api.models import Services
+from api.models import Services, Customer
 
 from django.shortcuts import render, redirect
  
@@ -166,6 +166,8 @@ def ScheduledAppointmentPage(request):
         # Get or create token for the user
         token, _ = Token.objects.get_or_create(user=user)
 
+        obj_to_customer_id = Customer.objects.get(accountToken=token)  # Replace obj_id with the ID of the object you want to delete
+        
 
         # Check if the request was successful (status code 200)
         if appointment_details_response.status_code == 200:
@@ -175,7 +177,7 @@ def ScheduledAppointmentPage(request):
             services_data = services_response.json() 
     
             #return render(request, 'AppointmentForm.html')
-            return render(request, 'scheduled_appointment.html', {'customers': customer_data, 'account_token': token, 'appointment_details': appointment_data, 'services': db_services})
+            return render(request, 'scheduled_appointment.html', {'customers': customer_data, 'customerid': obj_to_customer_id.id, 'account_token': token, 'appointment_details': appointment_data, 'services': db_services})
         else:
             # Handle the case when the API request fails (e.g., return an error message)
             return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
