@@ -164,6 +164,10 @@ body {
 	color: var(--red);
 }
 
+#sidebar .side-menu li button.logout {
+	color: var(--red);
+}
+
 #sidebar .side-menu.top li a:hover {
 	color: var(--pink);
 }

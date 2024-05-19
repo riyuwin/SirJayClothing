@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Card</title>
+    
+    {% load static %}
+    
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'assets/img/icon.ico' %}">
+
+    <link rel="stylesheet" type="text/css" href='{% static "/style.css" %}'>
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/slicknav.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/flaticon.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/progressbar_barfiller.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/gijgo.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/animated-headline.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/slick.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/nice-select.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    
+    <style> 
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        .banner_holder{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            align-self: flex-start; 
+            margin-bottom: 15px;
+        }
+
+        h2{
+            text-align: left;
+        }
+
+        h3 {
+            align-self: flex-start; 
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .product-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 70px;
+        }
+
+        .product-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 15px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            flex-grow: 1;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10%;
+        }
+
+        .product-name {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .product-price {
+            color: green;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- ? Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="{% static 'assets/img/logo/loder.png' %}" alt="">
+                </div>
+            </div>
+        </div>
+    </div> 
+    <!-- Preloader Start-->
+    <header>
+        <!-- Header Start -->
+        <div class="header-area header_area">
+            <div class="main-header">
+             <div class="header-bottom header-sticky">
+                <!-- Logo -->
+                <div class="logo">
+                    <h1 style="font-weight: bolder; width: 400px;">Sir Jay's Clothing</h4>
+                </div>
+                <div class="header-left  d-flex f-right align-items-center">
+                    <!-- Main-menu -->
+                    <div class="main-menu f-right d-none d-lg-block">
+                        <nav> 
+                            <ul id="navigation">                                                                                                                                     
+                                <li><a href="/">Home</a></li>
+                                <li><a href="#about">About</a></li>
+                                <li><a href="/guest_services/">Services</a></li>
+                                <li><a href="#contact">Contact</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- left Btn -->
+
+                    {% if not logged_in %}
+                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                            <a href="/account/login_page/" class="header-btn">Log In</a>
+                        </div>
+                    {% elif user_type == "Admin" %}
+                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                            <div class="dropdown-container"> 
+                                <button id="dropdown-btn" type="button" class="header-btn">{{ username }}</button>
+                                <div id="dropdown-menu" class="dropdown-menu">
+                                    <a href="/admin_site/manage_customer/" >
+                                        <button type="button" class="dropdown-item">Admin Site</button> 
+                                    </a>
+
+                                    <form id="logoutForm" action="/api/auth/logout/" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="Authorization" value="Token {{ user_token }}">  
+                                            <button type="submit" class="dropdown-item" >Logout</button> 
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                            <div class="dropdown-container"> 
+                                <button id="dropdown-btn" type="button" class="header-btn">{{ username }}</button>
+                                <div id="dropdown-menu" class="dropdown-menu">
+                                    <a href="/account_information/" >
+                                        <button type="button" class="dropdown-item">Account Information</button> 
+                                    </a>
+
+                                    <form id="logoutForm" action="/api/auth/logout/" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="Authorization" value="Token {{ user_token }}">  
+                                            <button type="submit" class="dropdown-item" >Logout</button> 
+                                    </form>
+ 
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <script>
+                        function toggleDropdown() {
+                            var dropdownMenu = document.getElementById("dropdown-menu");
+                            if (dropdownMenu.classList.contains("active")) {
+                                dropdownMenu.classList.remove("active");
+                            } else {
+                                dropdownMenu.classList.add("active");
+                            }
+                        }
+
+                        document.getElementById("dropdown-btn").addEventListener("click", toggleDropdown);
+ 
+                    </script>
+ 
+                </div>          
+                <!-- Mobile Menu -->
+                <div class="col-12">
+                    <div class="mobile_menu d-block d-lg-none"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Header End -->
+</header>
+
+    <main>  
+        <div class="container-fluid banner_holder" style="background-color: rgba(194, 185, 185, 0.253); padding: 40px;">
+            <div class="container">
+                <h1>Services Offer</h1><br> 
+
+            </div>
+        
+            <div class="product-container">
+                <div class="container-fluid">        
+                    <h3>CAMARINES NORTE NATIONAL HIGH SCHOOL (CNNHS) UNIFORMS</h3><br>
+                </div>
+                
+                {% for service in services %}
+
+                    {% if service.clothforSchool == "Camarines Norte National High School" %} 
+
+                        <div class="product-card" id="product1">
+                            <!-- <img src="{% static 'assets/img/pants.jpg' %}" alt="Product 1" class="product-image"> -->
+                            {% if service.image %}
+                                <a href="{{ service.image.url }}"><img  src="{{ service.image.url }}" alt="{{ service.clothOffered }}"class="product-image"> </a>
+                            {% else %}
+                                No Image Available
+                            {% endif %} 
+                            <h4 class="product-name">{{ service.clothOffered }}</h4>
+                            <p class="product-price">Php {{ service.clothPrice }}</p><hr>
+                            <a href="/guest_services_details/?id={{ service.id }}" style="color: rgba(0, 0, 0, 0.507);">View Details</a>
+                        </div>
+                    {% endif %} 
+        
+                {% endfor %}
+            </div> 
+
+            <div class="product-container">
+                <div class="container-fluid">         
+                    <h3>MORENO INTEGRATED SCHOOL (MIS) UNIFORMS</h3><br>
+                </div>
+                {% for service in services %}
+
+                    {% if service.clothforSchool == "Moreno Integrated School" %} 
+
+                        <div class="product-card" id="product1">
+                            <!-- <img src="{% static 'assets/img/pants.jpg' %}" alt="Product 1" class="product-image"> -->
+                            {% if service.image %}
+                                <a href="{{ service.image.url }}"><img  src="{{ service.image.url }}" alt="{{ service.clothOffered }}"class="product-image"> </a>
+                            {% else %}
+                                No Image Available
+                            {% endif %} 
+                            <h4 class="product-name">{{ service.clothOffered }}</h4>
+                            <p class="product-price">Php {{ service.clothPrice }}</p><hr>
+                            <a href="/guest_services_details/?id={{ service.id }}" style="color: rgba(0, 0, 0, 0.507);">View Details</a>
+                        </div>
+                    {% endif %} 
+        
+                {% endfor %}
+            </div>
+
+            <div class="product-container">
+                <div class="container-fluid">         
+                    <h3>MABINI COLLEGES INC. UNIFORMS</h3><br>
+                </div>
+                {% for service in services %}
+
+                    {% if service.clothforSchool == "Mabini Colleges Inc." %} 
+
+                        <div class="product-card" id="product1">
+                            <!-- <img src="{% static 'assets/img/pants.jpg' %}" alt="Product 1" class="product-image"> -->
+                            {% if service.image %}
+                                <a href="{{ service.image.url }}"><img  src="{{ service.image.url }}" alt="{{ service.clothOffered }}"class="product-image"> </a>
+                            {% else %}
+                                No Image Available
+                            {% endif %} 
+                            <h4 class="product-name">{{ service.clothOffered }}</h4>
+                            <p class="product-price">Php {{ service.clothPrice }}</p><hr>
+                            <a href="/guest_services_details/?id={{ service.id }}" style="color: rgba(0, 0, 0, 0.507);">View Details</a>
+                        </div>
+                    {% endif %} 
+        
+                {% endfor %}
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- JS here -->
+    <script src="{% static './assets/js/vendor/modernizr-3.5.0.min.js' %}"></script>
+    <!-- Jquery, Popper, Bootstrap -->
+    <script src="{% static './assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+    <script src="{% static './assets/js/popper.min.js' %}"></script>
+    <script src="{% static './assets/js/bootstrap.min.js' %}"></script>
+    <!-- Jquery Mobile Menu -->
+    <script src="{% static './assets/js/jquery.slicknav.min.js' %}"></script>
+
+    <!-- Jquery Slick , Owl-Carousel Plugins -->
+    <script src="{% static './assets/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static './assets/js/slick.min.js' %}"></script>
+    <!-- One Page, Animated-HeadLin -->
+    <script src="{% static  './assets/js/wow.min.js' %}"></script>
+    <script src="{% static './assets/js/animated.headline.js' %}"></script>
+    <script src="{% static './assets/js/jquery.magnific-popup.js' %}"></script>
+
+    <!-- Date Picker -->
+    <script src="{% static './assets/js/gijgo.min.js' %}"></script>
+    <!-- Nice-select, sticky -->
+    <script src="{% static './assets/js/jquery.nice-select.min.js' %}"></script>
+    <script src="{% static './assets/js/jquery.sticky.js' %}"></script>
+    <!-- Progress -->
+    <script src="{% static './assets/js/jquery.barfiller.js' %}"></script>
+
+    <!-- counter , waypoint,Hover Direction -->
+    <script src="{% static './assets/js/jquery.counterup.min.js' %}"></script>
+    <script src="{% static './assets/js/waypoints.min.js' %}"></script>
+    <script src="{% static './assets/js/jquery.countdown.min.js' %}"></script>
+    <script src="{% static './assets/js/hover-direction-snake.min.js' %}"></script>
+
+    <!-- contact js -->
+    <script src="{% static './assets/js/contact.js' %}"></script>
+    <script src="{% static './assets/js/jquery.form.js' %}"></script>
+    <script src="{% static './assets/js/jquery.validate.min.js' %}"></script>
+    <script src="{% static './assets/js/mail-script.js' %}"></script>
+    <script src="{% static './assets/js/jquery.ajaxchimp.min.js' %}"></script>
+
+    <!-- Jquery Plugins, main Jquery -->	
+    <script src="{% static './assets/js/plugins.js' %}"></script>
+    <script src="{% static './assets/js/main.js' %}"></script>
+
+</body>
+</html>

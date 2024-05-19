@@ -100,10 +100,15 @@
 		<ul class="side-menu">
 			
 			<li>
-				<a href="#" class="logout">
-					<i class='bx bxs-log-out-circle' ></i>
-					<span class="text">Logout</span>
-				</a>
+				<form id="logoutForm" action="/api/auth/logout/" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="Authorization" value="Token {{ user_token }}">
+                    
+                    <a href="#" class="logout" onclick="document.getElementById('logoutForm').submit(); return false;">
+                        <i class='bx bxs-log-out-circle'></i>
+                        <span class="text">Logout</span>
+                    </a>
+                </form>
 			</li>
 		</ul>
 	</section>
@@ -124,9 +129,21 @@
 			</form>
 			
 			
-			<a href="#" class="profile">
+			<!-- <a href="#" class="profile">
 				<img src="img/logo.png">
-			</a>
+			</a> -->
+
+            {% if not logged_in %}
+                <a href="#" class="profile">
+                    <!-- <img src="img/logo.png"> -->
+                    <h5>Login</h5>
+                </a>
+            {% else %}
+                <a href="#" class="profile">
+                    <!-- <img src="img/logo.png"> -->
+                    <h5>{{username}}</h5>
+                </a> 
+            {% endif %}
 		</nav>
 		<!-- NAVBAR -->
 
@@ -279,7 +296,7 @@
 
                                         <div class="col-sm-6 d-flex align-items-center justify-content-end">
                                             <div class="search-button"> 
-                                                <button class="btn btn-primary" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#addProduct">+ Add Services</button>
+                                                <button class="btn btn-primary" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#addProduct">+ Add Cloth Offer</button>
                                             </div> 
                                         </div>
                                     </div>
@@ -289,30 +306,45 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Services Name <i class="fa fa-sort"></i></th>
+                                            <th>Image</th> 
+                                            <th>Cloth Offers <i class="fa fa-sort"></i></th>
+                                            <th>School <i class="fa fa-sort"></i></th> 
                                             <th>Price</th> 
-                                            <th>Action</th>
-                                           
-                                           
+                                            <th>Action</th>  
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for services in services %}
+                                        {% for service in services %}
                                         <tr>
-                                            <td>{{ forloop.counter }}</td>  
-                                            <td>{{ services.servicesName }}</td>
-                                            <td>{{ services.servicesPrice }}</td> 
-                                            <td>            
-                                            <a href="#" class="edit" title="Edit" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#editProduct" onclick="setEditData('{{ services.id }}', '{{ services.servicesName }}', '{{ services.servicesPrice }}' )"><i class="material-icons">&#xE254;</i></a>
-                                            <a href="#" class="delete" title="Delete"  onclick="setDeleteData('{{ services.id }}')"><i class="material-icons">&#xE872;</i></a>
-                                                </td>    
-                                           
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>
+                                                {% if service.image %}
+                                                    <img src="{{ service.image.url }}" alt="{{ service.clothOffered }}" style="max-width: 100px; height: auto;">
+                                                {% else %}
+                                                    No Image Available
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ service.clothOffered }}</td>
+                                            <td>{{ service.clothforSchool }}</td> 
+                                            <td>{{ service.clothPrice }}</td>
+                                            <td>
+                                                <a href="#" class="edit" title="Edit" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#editProduct" onclick="setEditData('{{ service.id }}', '{{ service.clothOffered }}', '{{ service.clothforSchool }}', '{{ service.clothPrice }}', '{% if service.image %}{{ service.image.url }}{% else %}No Image{% endif %}', '{{ service.clothNotes }}',)"><i class="material-icons">&#xE254;</i></a>
+                                                <a href="#" class="delete" title="Delete" onclick="setDeleteData('{{ service.id }}')"><i class="material-icons">&#xE872;</i></a>
+                                            </td>
                                         </tr>
                                         {% endfor %}
-                                         
-                                             
                                     </tbody>
                                 </table>
+
+                                {% if service_detail %}
+                                <div>
+                                    <h2>Service Detail</h2>
+                                    <p>Cloth Offered: {{ service_detail.clothOffered }}</p>
+                                    <p>Cloth for School: {{ service_detail.clothforSchool }}</p> 
+                                    <p>Cloth Price: {{ service_detail.clothPrice }}</p>
+                                    <img src="{{ service_detail.image.url }}" alt="{{ service_detail.clothOffered }}" style="max-width: 100px; height: auto;">
+                                </div>
+                                {% endif %}
                                 
                             </div>
                         </div>  
@@ -333,25 +365,49 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Product Category</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Services Offers</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div> 
                 <div class="modal-footer">
                     
-                    <form id="deleteForm" action="/api/update_services/" method="POST">
+                    <form id="deleteForm" action="{% url 'update_services' %}" enctype="multipart/form-data" method="POST">
                         <div class="container"> 
                             <div class="row">
-                                <div class="col-md-12">
-                                    <label for="customersName">Service Name:</label><br>
-                                    <input type="text" class="form-control" name="serviceName" id="serviceName" placeholder="Product Name"><br>  
+                                <div class="col-md-6">
+                                    <label for="customersName">Cloth Offers:</label><br>
+                                    <input type="text" class="form-control" name="clothName" id="clothName" placeholder="Product Name"><br>  
                                 </div>
-        
-                                <div class="col-md-12">
+                                
+                                <div class="col-md-6">
                                     <label for="customersGender">Price (PHP):</label>
                                     <input type="number" class="form-control" name="servicePrice" id="servicePrice" placeholder="Quantity"><br>  
                                 </div> 
                                 
+                                <div class="col-md-12">
+                                    <label for="customersName">For School:</label><br>
+                                    <input type="text" class="form-control" name="schoolName" id="schoolName" placeholder="Product Name"><br>  
+                                </div>
+                                
+                                <!-- <div class="col-md-12">
+                                    <label for="customersName">Size:</label><br>
+                                    <input type="text" class="form-control" name="clothSize" id="clothSize" placeholder="Product Name"><br>  
+                                </div> -->
 
+                                <div class="col-md-12">
+                                    <label for="customersGender">Description:</label><br>
+                                    <textarea rows="3" id="description" class="form-control" name="description"></textarea><br>
+                                </div> 
+        
+
+                                <div class="col-md-6">
+                                    <label for="customersGender">Cloth Image:</label><br>
+                                    <img id="imgCloth" src="{{ service.image.url }}" alt="{{ service.clothOffered }}" style="max-width: 100px; height: auto;"> 
+                                </div> 
+                                
+                                <div class="col-md-6">
+                                    <label for="customersGender">Select Image:</label>
+                                    <input type="file" name="imgClothInput" id="imgClothInput" required><br> 
+                                </div> 
                                 
                             </div>
                         </div>
@@ -362,6 +418,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary" >Save Changes</button>
                     </form>
+ 
                     
                 </div>
             </div>
@@ -378,18 +435,53 @@
                 </div> 
 
                 <div class="modal-footer">
-                    <form id="deleteForm" action="/api/insert_services/" method="POST">
+                    <form method="POST" action="{% url 'insert_services' %}" enctype="multipart/form-data">
                         <div class="container"> 
                             <div class="row">
-                                <div class="col-md-12">
-                                    <label for="customersName">Service Name:</label><br>
-                                    <input type="text" class="form-control" name="serviceName" id="serviceName" placeholder="Product Name"><br>  
+                                <div class="col-md-6">
+                                    <label for="customersName">Cloth Offers:</label><br>
+                                    <input type="text" class="form-control" name="clothName" id="clothName" placeholder="Product Name"><br>  
                                 </div>
-        
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <label for="customersGender">Price (PHP):</label>
-                                    <input type="number" class="form-control" name="servicePrice" id="servicePrice" placeholder="PHP"><br>  
+                                    <input type="number" class="form-control" name="servicePrice" id="servicePrice" placeholder="Quantity"><br>  
                                 </div> 
+                                
+                                <div class="col-md-12">
+                                    <label for="customersName">For School:</label><br> 
+                                    <select class="form-control" name="schoolName" id="schoolName">
+                                        <option>--- Select School ---</option>
+                                        <option value="Camarines Norte National High School">Camarines Norte National High School</option>
+                                        <option value="Moreno Integrated School">Moreno Integrated School</option>
+                                        <option value="Basud National High School">Basud National High School</option>
+                                        <option value="Mabini Colleges Inc.">Mabini Colleges Inc.</option>
+                                    </select><br>  
+                                </div>
+                                
+                                <!-- <div class="col-md-12">
+                                    <label for="customersName">Size:</label><br>
+                                     
+                                    <select class="form-control" name="clothSize" id="clothSize">
+                                        <option>--- Select Size ---</option>
+                                        <option value="S">S</option>
+                                        <option value="M">M</option>
+                                        <option value="L">L</option>
+                                        <option value="XL">XL</option>
+                                        <option value="XXL">XXL</option>
+                                    </select><br>  
+                                </div> --> 
+
+                                
+                                <div class="col-md-12">
+                                    <label for="customersGender">Description:</label><br>
+                                    <textarea rows="3" id="description" class="form-control" name="description"></textarea><br>
+                                </div> 
+
+                                <div class="col-md-12">
+                                    <label for="customersGender">Select Image:</label><br>
+                                    <input type="file" name="imgClothInput" id="imgClothInput" required><br> 
+                                </div> 
+
                                 
                             </div>
                         </div>
@@ -430,10 +522,14 @@
     </div>
 
     <script>
-        function setEditData(serviceID, serviceName, servicePrice) {
+        function setEditData(serviceID, clothName, clothSchool , clothPrice, clothImg, description) {
             document.getElementById('servicesIDSelected').value = serviceID;
-            document.getElementById('serviceName').value = serviceName;
-            document.getElementById('servicePrice').value = servicePrice; 
+            document.getElementById('clothName').value = clothName;
+            document.getElementById('schoolName').value = clothSchool;  
+            document.getElementById('description').value = description; 
+            document.getElementById('servicePrice').value = clothPrice; 
+            document.getElementById('imgCloth').src = clothImg;
+            document.getElementById('imgClothInput').value = clothImg;
 
             $('#editProduct').modal('show');
         }

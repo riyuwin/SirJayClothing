@@ -40,12 +40,16 @@ class Customer(models.Model):
 
 
 class Services(models.Model):
-    servicesName = models.CharField(max_length=500)
-    servicesPrice = models.IntegerField() 
+    clothOffered = models.CharField(max_length=500)
+    clothforSchool = models.CharField(max_length=500) 
+    clothPrice = models.IntegerField() 
+    clothNotes = models.CharField(max_length=1000) 
     date_added = models.DateField(auto_now_add=True)
+    image = models.ImageField(upload_to='images/', blank=True, null=True)  # New field for image
+
 
     def __str__(self):
-        return f'{self.servicesName} - {self.servicesPrice}'
+        return f'{self.clothforSchool} - {self.clothOffered}'
 
 
 class Appointment(models.Model):
@@ -54,6 +58,7 @@ class Appointment(models.Model):
     appointmentDate = models.DateField()
     appointmentTime = models.TimeField()
     appointmentServices = models.ForeignKey(Services, on_delete=models.CASCADE)
+    appointmentQty = models.IntegerField()
     customerNotes = models.CharField(max_length=200, blank=True, null=True)  # Make categoryDesc optional
 
     STATUS_CHOICES = (
@@ -124,3 +129,19 @@ class NecessaryItems(models.Model):
 
     def __str__(self):
         return f'{self.productName} - {self.appointmentName}'
+
+
+class AppointmentQuery(models.Model):
+    appointmentName = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    date_added = models.DateField(auto_now_add=True)
+    message = models.CharField(max_length=500)
+
+    USER_CHOICES = (
+        ('Admin', 'Admin'),
+        ('Customer', 'Customer'), 
+    )
+
+    userFeedback = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f'{self.appointmentName}'

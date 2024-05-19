@@ -107,10 +107,15 @@
 		<ul class="side-menu">
 			
 			<li>
-				<a href="#" class="logout">
-					<i class='bx bxs-log-out-circle' ></i>
-					<span class="text">Logout</span>
-				</a>
+				<form id="logoutForm" action="/api/auth/logout/" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="Authorization" value="Token {{ user_token }}">
+                    
+                    <a href="#" class="logout" onclick="document.getElementById('logoutForm').submit(); return false;">
+                        <i class='bx bxs-log-out-circle'></i>
+                        <span class="text">Logout</span>
+                    </a>
+                </form>
 			</li>
 		</ul>
 	</section>
@@ -132,9 +137,21 @@
 			</form>
 			
 			
-			<a href="#" class="profile">
+			<!-- <a href="#" class="profile">
 				<img src="img/logo.png">
-			</a>
+			</a> -->
+
+            {% if not logged_in %}
+                <a href="#" class="profile">
+                    <!-- <img src="img/logo.png"> -->
+                    <h5>Login</h5>
+                </a>
+            {% else %}
+                <a href="#" class="profile">
+                    <!-- <img src="img/logo.png"> -->
+                    <h5>{{username}}</h5>
+                </a> 
+            {% endif %}
 		</nav>
 		<!-- NAVBAR -->
 
@@ -375,6 +392,58 @@
                                                         </table>
 
                                                     </div> 
+
+                                                    <div class="col-sm-12">
+                                                        <hr>
+                                                        <div class="row">
+ 
+                                                            <div class="col-sm-6 mb-3" >
+                                                                <label>Send Feedback</label>
+                                                                <form method="POST" action="/api/insert_appointmentquery/?id={{id_value}}">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="appointmentID" value="{{ id_value }}">
+    
+                                                                    <textarea class="form-control" name="message" rows="3"></textarea><br>
+                                                                    <input type="submit" class="btn btn-primary" value="Send Message"/> 
+                                                                </form>
+                                                            </div>
+    
+                                                            <div class="col-sm-12 mb-3" style=" padding: 16px;">
+                                                                <label>Conversation Box</label> 
+                                                                 
+                                                                {% for query in appointmentquery %} 
+                                                                {% if query.appointmentName|stringformat:"s" == id_value|stringformat:"s" %}
+                                                                    <div class="container" style="width: 100%; outline: 1px solid rgba(0, 0, 0, 0.26); padding: 16px; border-radius: 5px; margin-bottom: 10px;">
+                                                                        <div class="row"> 
+                                                                            <div class="col-sm-12 mb-3 offset-sm-6">
+    
+                                                                            </div>
+                                                                            {% if query.userFeedback == "Admin" %}
+                                                                            <div class="col-sm-6 mb-3 offset-sm-6">
+                                                                                <div class="container bg-info text-white rounded p-2">
+                                                                                    <p>{{ query.message }}</p><br>
+                                                                                </div>
+                                                                            </div>
+                                                                            {% endif %}
+                                                                            {% if query.userFeedback == "Customer" %}
+                                                                            <div class="col-sm-6 mb-3">
+                                                                                <div class="container bg-secondary rounded p-2">
+                                                                                    <p>{{ query.message }}</p>
+                                                                                </div>
+                                                                            </div>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    {% endif %}
+                                                                </div>
+                                                                {% endfor %}
+                                                            </div>
+
+                                                        </div>
+                                                        
+
+                                                    </div> 
+
+                                                    
 
                                                 </div>
                                             

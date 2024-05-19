@@ -6,9 +6,13 @@ urlpatterns = [
     path('success_page/', views.SuccessPage, name='success_page'),
  
     # Client Interface
+    path('appointment_information/', views.ScheduledAppointmentPage, name='appointment_information'),
     path('account_information/', views.AccountInformationPage, name='account_information'),
-    path('scheduled_information/', views.ScheduledAppointmentPage, name='scheduled_information'),
     path('customer_information/', views.CustomerAppointmentPage, name='customer_information'),
-    path('appointment_form/', views.LaunchAppointmentForm, name='appointment_form'),
+
+    # NavBar Interface
+    path('guest_appointment_form/', views.LaunchAppointmentForm, name='guest_appointment_form'),
+    path('guest_services/', views.ServicesPage, name='guest_appointment_form'),
+    path('guest_services_details/', views.ServicesDetailsPage, name='guest_services_details'),
     path('', views.LaunchIndex, name='index'),
 ]

@@ -48,38 +48,78 @@
              <div class="header-bottom header-sticky">
                 <!-- Logo -->
                 <div class="logo">
-                    <h1 style="font-weight: bolder;">Sir Jay's Clothing</h4>
+                    <h1 style="font-weight: bolder; width: 400px;">Sir Jay's Clothing</h4>
                 </div>
                 <div class="header-left  d-flex f-right align-items-center">
                     <!-- Main-menu -->
                     <div class="main-menu f-right d-none d-lg-block">
                         <nav> 
                             <ul id="navigation">                                                                                                                                     
-                                <li><a href="index.html">Home</a></li>
+                                <li><a href="/">Home</a></li>
                                 <li><a href="#about">About</a></li>
-                                <li><a href="#services">Services</a></li>
+                                <li><a href="/guest_services/">Services</a></li>
                                 <li><a href="#contact">Contact</a></li>
                             </ul>
                         </nav>
                     </div>
                     <!-- left Btn -->
-                    
 
-                    {% if not logged_in %}   
-                        <div class="header-right-btn f-right d-none d-lg-block  ml-30">
+                    {% if not logged_in %}
+                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
                             <a href="/account/login_page/" class="header-btn">Log In</a>
                         </div>
-                    {% else %} 
-                        <div class="header-right-btn f-right d-none d-lg-block  ml-30">  
-                            <form id="logoutForm" action="/api/auth/logout/" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="Authorization" value="Token {{ user_token }}"> 
-                                    <!-- <a href="/account/login_page/" class="header-btn">Log In</a> -->
-                                    <!-- <a type="submit" class="nav-link" >Logout</a> -->
-                                    <button type="submit" class="header-btn" >Logout</button> 
-                            </form>
-                        </div>  
-                    {% endif %} 
+                    {% elif user_type == "Admin" %}
+                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                            <div class="dropdown-container"> 
+                                <button id="dropdown-btn" type="button" class="header-btn">{{ username }}</button>
+                                <div id="dropdown-menu" class="dropdown-menu">
+                                    <a href="/admin_site/manage_customer/" >
+                                        <button type="button" class="dropdown-item">Admin Site</button> 
+                                    </a>
+
+                                    <form id="logoutForm" action="/api/auth/logout/" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="Authorization" value="Token {{ user_token }}">  
+                                            <button type="submit" class="dropdown-item" >Logout</button> 
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                            <div class="dropdown-container"> 
+                                <button id="dropdown-btn" type="button" class="header-btn">{{ username }}</button>
+                                <div id="dropdown-menu" class="dropdown-menu">
+                                    <a href="/account_information/" >
+                                        <button type="button" class="dropdown-item">Account Information</button> 
+                                    </a>
+
+                                    <form id="logoutForm" action="/api/auth/logout/" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="Authorization" value="Token {{ user_token }}">  
+                                            <button type="submit" class="dropdown-item" >Logout</button> 
+                                    </form>
+ 
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <script>
+                        function toggleDropdown() {
+                            var dropdownMenu = document.getElementById("dropdown-menu");
+                            if (dropdownMenu.classList.contains("active")) {
+                                dropdownMenu.classList.remove("active");
+                            } else {
+                                dropdownMenu.classList.add("active");
+                            }
+                        }
+
+                        document.getElementById("dropdown-btn").addEventListener("click", toggleDropdown);
+ 
+                    </script>
+ 
                 </div>          
                 <!-- Mobile Menu -->
                 <div class="col-12">
@@ -104,7 +144,7 @@
                             <h1 data-animation="fadeInLeft" data-delay=".4s">We make clothes that suit you</h1>
                             <p data-animation="fadeInLeft" data-delay=".6s">Do you need a tailor that offers best result when it comes to uniform? Come on down to Sir Jay's Clothing Shop! </p>
                             <!-- Hero Btn -->
-                            <a href="/appointment_form/" class="btn"  data-animation="fadeInLeft" data-delay=".8s" >Book Now</a>
+                            <a href="/guest_appointment_form/" class="btn"  data-animation="fadeInLeft" data-delay=".8s" >Set Appointment</a>
                         </div>
                     </div>
                 </div>

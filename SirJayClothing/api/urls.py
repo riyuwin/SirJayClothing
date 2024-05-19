@@ -6,11 +6,17 @@ from .views import AccountList, AccountDetail, \
     NecessaryItemsList, NecessaryItemsDetail, \
     SupplierList, SupplierDetail, \
     CategoryList, CategoryDetail, \
-    ServicesList, ServicesDetail
+    ServicesList, ServicesDetail, \
+    AppointmentQueryList, AppointmentQueryDetail
 
-from .models import Account, Customer, Appointment, Supply, NecessaryItems, Supplier, Category, Services
+from .models import Account, Customer, Appointment, Supply, NecessaryItems, Supplier, Category, Services, AppointmentQuery
 
-from . import views
+from . import views 
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+from rest_framework import routers
 
 urlpatterns = [
     #path('auth/account/', AccountList.as_view()),
@@ -21,6 +27,8 @@ urlpatterns = [
 
     path('appointment/appointment_details/', AppointmentList.as_view()),
     path('appointment/appointment_details/<int:pk>/', AppointmentDetail.as_view()),
+    path('appointment/appointment_query/', AppointmentQueryList.as_view()),
+    path('appointment/appointment_query/<int:pk>/', AppointmentQueryDetail.as_view()),
 
     path('inventory/product/', ProductList.as_view()),
     path('inventory/product/<int:pk>/', ProductDetail.as_view()),
@@ -31,7 +39,9 @@ urlpatterns = [
     path('inventory/category/', CategoryList.as_view()),
     path('inventory/category/<int:pk>/', CategoryDetail.as_view()),
     path('inventory/services/', ServicesList.as_view()),
-    path('inventory/services/<int:pk>/', ServicesDetail.as_view()),
+    path('inventory/services/<int:pk>/', ServicesDetail.as_view()), 
+     
+    path('authorized_template/', views.authorized_template_page, name='authorized_template'),
 
     path('account_registration/', views.insert_customer_view, name='account_registration'),
 
@@ -55,7 +65,11 @@ urlpatterns = [
     path('update_product/', views.update_product, name='update_product'),
     path('delete_product/', views.delete_product, name='delete_product'),
 
-    path('insert_services/', views.insert_services, name='insert_product'),
+    path('insert_services/', views.insert_services, name='insert_services'),
     path('update_services/', views.update_services, name='update_services'),
     path('delete_services/', views.delete_services, name='delete_services'),
-]
+ 
+    path('insert_appointmentquery/', views.insert_appointment_query, name='insert_appointmentquery'),
+ 
+]  
+ 

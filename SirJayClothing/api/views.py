@@ -3,9 +3,9 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 
-from .models import Account, Customer, Appointment, Supply, NecessaryItems, Supplier, Category, Services
+from .models import Account, Customer, Appointment, Supply, NecessaryItems, Supplier, Category, Services, AppointmentQuery
 from .serializers import AccountSerializer, CustomerSerializer, ProductSerializer, \
-    NecessaryItemsSerializer, SupplierSerializer, CategorySerializer, AppointmentSerializer, ServicesSerializer  # Importing serializers for your models
+    NecessaryItemsSerializer, SupplierSerializer, CategorySerializer, AppointmentSerializer, ServicesSerializer, AppointmentQuerySerializer  # Importing serializers for your models
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -78,6 +78,14 @@ class ServicesDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ServicesSerializer
     queryset = Services.objects.all()
 
+class AppointmentQueryList(generics.ListCreateAPIView):
+    serializer_class = AppointmentQuerySerializer
+    queryset = AppointmentQuery.objects.all()
+
+class AppointmentQueryDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AppointmentQuerySerializer
+    queryset = AppointmentQuery.objects.all()
+
 
 @csrf_exempt
 def insert_customer_view(request):
@@ -113,7 +121,7 @@ def insert_customer_view(request):
 def insert_necessary_items(request):
     if request.method == 'POST':
         try:
-             
+            
 
             # Get form data
             appointment_selected_id = request.POST.get('appointmentselectedId')
@@ -177,10 +185,11 @@ def insert_appointment(request):
             services_selector = request.POST.get('servicesSelector')
             appointment_date = request.POST.get('date')
             appointment_time = request.POST.get('time')
+            appointment_qty = request.POST.get('quantity')
             appointment_notes = request.POST.get('notes') 
 
             # Validate the received data
-            if not all([services_selector, appointment_date, appointment_time]):
+            if not all([services_selector, appointment_date, appointment_qty, appointment_time]):
                 return JsonResponse({'error': 'Missing required fields.'}, status=400)
 
             # Get or create token for the user
@@ -202,6 +211,7 @@ def insert_appointment(request):
                     appointmentTime=appointment_time,
                     customerNotes=appointment_notes,  
                     appointmentStatus=default_status,
+                    appointmentQty=appointment_qty,
                     customersName=customer,  # This should be the customer object, not customer.id
                     appointmentServices=service,
                 )
@@ -502,62 +512,65 @@ def delete_customer(request):
 @csrf_exempt
 def insert_services(request):
     if request.method == 'POST':
-        # Get the current user
         user = request.user
 
-        # Check if the user is authenticated
         if user.is_authenticated:
-            # Get form data
-            Name = request.POST.get('serviceName')
-            Price = request.POST.get('servicePrice')  
+            name = request.POST.get('clothName')
+            school = request.POST.get('schoolName') 
+            price = request.POST.get('servicePrice')
+            description = request.POST.get('description')
+            
+            # Check if an image is uploaded
+            clothImg = request.FILES.get('imgClothInput')
 
             # Get or create token for the user
             token, _ = Token.objects.get_or_create(user=user)
- 
-            # Save appointment data to the database
-            supplier = Services.objects.create(
-                servicesName=Name,
-                servicesPrice=Price,  
+
+            # Save service data to the database
+            service = Services.objects.create(
+                clothOffered=name,
+                clothforSchool=school, 
+                clothPrice=price,
+                clothNotes=description,
+                image=clothImg,  # Assign the uploaded file
             )
 
-            # Redirect to the desired URL with the token as a query parameter
+            # Redirect to the desired URL
             return redirect(f'/admin_site/manage_services/')
-
         else:
             return JsonResponse({'error': 'User is not authenticated.'}, status=401)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-
 
 @csrf_exempt
 def update_services(request):
     if request.method == 'POST':
-        # Get the current user
         user = request.user
 
-        # Check if the user is authenticated
         if user.is_authenticated:
-            # Get form data
-            serviceId = request.POST.get('servicesIDSelected')  # Corrected variable name
-            name = request.POST.get('serviceName')  # Corrected variable name
-            price = request.POST.get('servicePrice') 
-  
+            serviceId = request.POST.get('servicesIDSelected')
+            name = request.POST.get('clothName')
+            school = request.POST.get('schoolName') 
+            price = request.POST.get('servicePrice')
+            description = request.POST.get('description')
 
-            # Get the existing product object or return 404 if not found
             services = get_object_or_404(Services, id=serviceId)
 
-            # Update product attributes 
-            services.servicesName = name
-            services.servicesPrice = price 
+            services.clothOffered = name
+            services.clothforSchool = school 
+            services.clothPrice = price
+            services.clothNotes = description
+
+            if 'imgClothInput' in request.FILES:
+                services.image = request.FILES['imgClothInput']
+
             services.save()
 
-            # Redirect or return success response
-            return redirect('/admin_site/manage_services/')  # Redirect URL corrected
+            return redirect('/admin_site/manage_services/')
         else:
             return JsonResponse({'error': 'User is not authenticated.'}, status=401)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-    
 
 @csrf_exempt
 def delete_services(request):
@@ -597,3 +610,65 @@ def update_appointment_status(request):
             return JsonResponse({'error': 'User is not authenticated.'}, status=401)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+@csrf_exempt
+def insert_appointment_query(request):
+    if request.method == 'POST':
+        user = request.user
+
+        if user.is_authenticated:
+            # Tama na pagkakamali: Ibinibigay ang tamang instance ng Appointment
+            appointmentID = request.POST.get('appointmentID')
+            query = request.POST.get('message') 
+
+            url_id = request.GET.get('id')   
+
+            # Determine if the user is admin or customer
+            user_type = 'Admin' if user.is_staff or user.is_superuser else 'Customer'
+
+            # Get the Appointment instance using the ID
+            appointment_instance = Appointment.objects.get(id=appointmentID)
+
+            # Save service data to the database
+            service = AppointmentQuery.objects.create(
+                appointmentName=appointment_instance,  # Tamang pagkakamali: Ibinibigay ang tamang instance ng Appointment
+                userFeedback=user_type,  
+                message=query,  
+            )
+
+            if user_type == "Customer":
+                # Redirect to the desired URL
+                return redirect(f'/customer_information/?id={url_id}')
+            elif user_type == "Admin":
+                return redirect(f'/admin_site/ppointment_details/?id={url_id}')
+            
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+def admin_account_checker(request): 
+    user = request.user
+
+    if user.is_authenticated:
+        # Determine if the user is admin or customer
+        user_type = 'Admin' if user.is_staff or user.is_superuser else 'Customer'
+
+        if user_type != "Admin":
+            return redirect('/authorized_template/')
+    
+
+def customer_account_checker(request): 
+    user = request.user
+
+    if user.is_authenticated:
+        # Determine if the user is admin or customer
+        user_type = 'Admin' if user.is_staff or user.is_superuser else 'Customer'
+
+        if user_type != "Customer":
+            return redirect('/authorized_template/')
+    return None  # Return None if the user is an admin or if the user is not authenticated
+
+def authorized_template_page(request):
+    return render(request, 'authorized_template.html', {'message': 'Authorized user only.'})

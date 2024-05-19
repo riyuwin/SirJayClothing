@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Boxicons -->
+	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+	<!-- My CSS -->
+    
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href='{% static "admin_style.css" %}'>
+
+    <title>Manage Product</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+	<title>Sir Jay</title>
+</head>
+<body>
+
+
+	<!-- SIDEBAR -->
+	<section id="sidebar"> 
+		<a href="#" class="brand">
+			<i class='bx bxs-smile'></i>
+			<span class="text">Sir Jay Clothing</span>
+		</a>
+		<ul class="side-menu top"> 
+            <li>
+                <div class="container">
+                    <h7 class="menuLabel">GENERAL</h7> 
+                </div>
+            </li>
+
+            
+			<li> 
+				<a href="/">
+					<i class='bx bxs-home' ></i>
+					<span class="text">Home</span>
+				</a>
+			</li>
+            
+			<li > 
+				<a href="/account_information/">
+					<i class='bx bxs-user' ></i>
+					<span class="text">Account Information</span>
+				</a>
+			</li>
+			<li class="active">
+				<a href="appointment_information/">
+					<i class='bx bxs-briefcase'></i>
+					<span class="text">Scheduled Appointment</span>
+				</a>
+			</li>
+ 
+		</ul>
+		<ul class="side-menu">
+			
+			<li>
+				<form id="logoutForm" action="/api/auth/logout/" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="Authorization" value="Token {{ user_token }}">
+                    
+                    <a href="#" class="logout" onclick="document.getElementById('logoutForm').submit(); return false;">
+                        <i class='bx bxs-log-out-circle'></i>
+                        <span class="text">Logout</span>
+                    </a>
+                </form>
+			</li>
+		</ul>
+	</section>
+	<!-- SIDEBAR -->
+
+
+	<!-- CONTENT -->
+	<section id="content"> 
+        <nav>
+			<i class='bx bx-menu' ></i>
+			 
+			 
+		</nav>
+		<!-- NAVBAR -->
+
+		<!-- MAIN -->
+		<main>
+			<div class="head-title">
+				
+                <style>
+                    body {
+                        color: #566787;
+                        background: #f5f5f5;
+                        font-family: 'Roboto', sans-serif;
+                    }
+                    .table-responsive {
+                        margin: 30px 0;
+                    }
+                    .table-wrapper {
+                        min-width: 1000px;
+                        background: #fff;
+                        padding: 20px;
+                        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+                    }
+                    .table-title {
+                        padding-bottom: 10px;
+                        margin: 0 0 10px;
+                        min-width: 100%;
+                    }
+                    .table-title h2 {
+                        margin: 8px 0 0;
+                        font-size: 22px;
+                    }
+                    .search-box {
+                        position: relative;        
+                        float: right;
+                    }
+                    .search-box input {
+                        height: 34px;
+                        border-radius: 20px;
+                        padding-left: 35px;
+                        border-color: #ddd;
+                        box-shadow: none;
+                    }
+                    .search-box input:focus {
+                        border-color: #3FBAE4;
+                    }
+                    .search-box i {
+                        color: #a0a5b1;
+                        position: absolute;
+                        font-size: 19px;
+                        top: 8px;
+                        left: 10px;
+                    }
+                    table.table tr th, table.table tr td {
+                        border-color: #e9e9e9;
+                    }
+                    table.table-striped tbody tr:nth-of-type(odd) {
+                        background-color: #fcfcfc;
+                    }
+                    table.table-striped.table-hover tbody tr:hover {
+                        background: #f5f5f5;
+                    }
+                    table.table th i {
+                        font-size: 13px;
+                        margin: 0 5px;
+                        cursor: pointer;
+                    }
+                    table.table td:last-child {
+                        width: 130px;
+                    }
+                    table.table td a {
+                        color: #a0a5b1;
+                        display: inline-block;
+                        margin: 0 5px;
+                    }
+                    table.table td a.view {
+                        color: #03A9F4;
+                    }
+                    table.table td a.edit {
+                        color: #FFC107;
+                    }
+                    table.table td a.delete {
+                        color: #E34724;
+                    }
+                    table.table td i {
+                        font-size: 19px;
+                    }    
+                    .pagination {
+                        float: right;
+                        margin: 0 0 5px;
+                    }
+                    .pagination li a {
+                        border: none;
+                        font-size: 95%;
+                        width: 30px;
+                        height: 30px;
+                        color: #999;
+                        margin: 0 2px;
+                        line-height: 30px;
+                        border-radius: 30px !important;
+                        text-align: center;
+                        padding: 0;
+                    }
+                    .pagination li a:hover {
+                        color: #666;
+                    }	
+                    .pagination li.active a {
+                        background: #03A9F4;
+                    }
+                    .pagination li.active a:hover {        
+                        background: #0397d6;
+                    }
+                    .pagination li.disabled i {
+                        color: #ccc;
+                    }
+                    .pagination li i {
+                        font-size: 16px;
+                        padding-top: 6px
+                    }
+                    .hint-text {
+                        float: left;
+                        margin-top: 6px;
+                        font-size: 95%;
+                    }    
+                    </style>
+                    <script>
+                    $(document).ready(function(){
+                        $('[data-toggle="tooltip"]').tooltip();
+                    });
+                    </script>
+                    </head>
+                    <body>
+
+                    <div class="container-xl" style="color: black;">
+                        <div class="table-responsive">
+                            <div class="table-wrapper">
+                                <div class="table-title">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <h2><b>Appointment Details</b></h2> 
+                                        </div> <br> <br>
+                                        <div class="col-sm-12">
+                                            <h6>Manage your appointment </h6> 
+                                            <br><hr>
+                                        </div> 
+
+                                        <div class="container">
+                                            <div class="row"> 
+                                                {% for appointment_detail in appointment_details %} 
+                                                    {% if url_id|stringformat:"s" == appointment_detail.id|stringformat:"s" %}
+                                                    
+                                                        {% for service in services %} 
+                                                            {% if service.id|stringformat:"s" == appointment_detail.id|stringformat:"s" %}
+                                                                <div class="col-sm-6 mb-3">
+                                                                            <h2 for="firstName">Booked Services: <b>{{ service.clothOffered }}</b></h2><br>
+                                                                            <h2 for="firstName">School: <b>{{ service.clothforSchool }}</b></h2><br>
+                                                                            <h2 for="firstName">Appointment Status: <b>{{ appointment_detail.appointmentStatus }}</b></h2> <br> 
+                                                                        <br>
+                                                                    <label for="firstName">Appointment Datetime: <b>{{ appointment_detail.appointmentDate }} | {{ appointment_detail.appointmentTime }}</b></label> <br>  
+                                                                    <label for="firstName">Quantity: <b>{{ appointment_detail.appointmentQty }}</b></label> <br>
+                                                                    
+                                                                    <hr>
+                                                                </div>
+
+                                                                <div class="col-sm-6 mb-3" style="text-align: center;">
+                                                                    <div class="container"> 
+                                                                        <img src="{{ service.image.url }}" alt="{{ service.clothOffered }}" width="50%" height="50%" /> 
+                                                                    </div> 
+                                                                </div>
+
+                                                            {% endif %}
+                                                        {% endfor %}
+
+                                                        <div class="col-sm-12 mb-3">
+                                                            <label>Contact Admin</label>
+                                                            <form method="POST" action="/api/insert_appointmentquery/?id={{url_id}}">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="appointmentID" value="{{ url_id }}">
+
+                                                                <textarea class="form-control" name="message" rows="3"></textarea><br>
+                                                                <input type="submit" class="btn btn-primary" value="Send Mesage"/> 
+                                                            </form>
+                                                        </div>
+
+                                                        <div class="col-sm-12 mb-3">
+                                                            <label>Conversation Box</label> 
+                                                             
+                                                            {% for query in appointmentquery %}
+                                                            {% if query.appointmentName|stringformat:"s" == url_id|stringformat:"s" %}
+                                                                <div class="container" style="width: 100%; outline: 1px solid rgba(0, 0, 0, 0.26); padding: 16px; border-radius: 5px; margin-bottom: 10px;">
+                                                                    <div class="row">
+                                                                        {% if query.userFeedback == "Customer" %}
+                                                                        <div class="col-sm-6 mb-3 offset-sm-6">
+                                                                            <div class="container bg-info text-white rounded p-2">
+                                                                                <p>{{ query.message }}</p><br>
+                                                                            </div>
+                                                                        </div>
+                                                                        {% endif %}
+                                                                        {% if query.userFeedback == "Admin" %}
+                                                                        <div class="col-sm-6 mb-3">
+                                                                            <div class="container bg-secondary rounded p-2">
+                                                                                <p>{{ query.message }}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                {% endif %}
+                                                            </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                         
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+  
+                                    </div>   
+                                </div> 
+                            </div>
+                        </div>  
+                    </div>   
+
+				
+				
+				</div>
+			</div>
+		</main>
+		<!-- MAIN -->
+	</section>
+	<!-- CONTENT -->
+	
+
+	  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+	<script src='{% static "script.js" %}'></script>
+    
+</body>
+</html>

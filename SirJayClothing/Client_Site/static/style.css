@@ -121,3 +121,95 @@ span {
 }
 
 /* End of the Index css */
+.services_row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    justify-content: center;
+    /* Add a minimum height */
+    min-height: 100vh;
+    /* or any other value that suits your layout */
+}
+
+.services_col {
+    padding: 16px;
+    min-height: 350px;
+    /* Use min-height instead of height */
+    border: 1px solid rgba(0, 0, 0, 0.199);
+    text-align: center;
+    border-radius: 5px;
+    background: white;
+}
+
+.img-holder {
+    padding: 16px;
+}
+
+.services_img {
+    max-width: 100%;
+    /* Allow the image to be responsive */
+    max-height: 100%;
+    /* Allow the image to be responsive */
+    margin-bottom: 10px;
+}
+
+.services_col h4 {
+    text-align: center;
+    margin: 0;
+    color: black;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.services_col p {
+    text-align: center;
+    margin: 0;
+    color: black;
+    font-size: 13px;
+}
+
+.services_col a {
+    color: rgb(32, 32, 68);
+    width: 60%;
+    outline: none;
+    color: rgba(0, 0, 0, 0.288);
+}
+
+/* For Dropdown */
+
+.dropdown-container {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    /* Set the width to match content width */
+    min-width: 100%;
+    /* Ensure the width covers the button */
+    white-space: nowrap;
+    /* Prevent line breaks */
+}
+
+.dropdown-menu.active {
+    display: block !important;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    height: 40px;
+    font-size: 12px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+    outline: 0.5px solid rgb(228, 210, 210);
+}
