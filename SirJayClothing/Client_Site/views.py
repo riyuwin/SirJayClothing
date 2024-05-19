@@ -65,6 +65,25 @@ def ServicesPage(request):
     else:
         return render(request, 'error_template.html', {'message': 'User is not authenticated.'})
     
+#@login_required
+def LaunchContact(request): 
+    user_id = request.user.id if request.user.is_authenticated else None
+    username = request.user.username if request.user.is_authenticated else None
+    user_token = None 
+
+    user = request.user
+
+    if request.user.is_authenticated:
+        try:
+            user_token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            # Handle the case where the token doesn't exist for the user
+            pass
+    
+    user_type = 'Admin' if user.is_staff or user.is_superuser else 'Customer'
+    return render(request, "guest_contact.html", {'logged_in': request.user.is_authenticated, 'user_id': user_id, 'username': username, 'user_token': user_token, 'user_type': user_type})
+ 
+
 def LaunchAppointmentForm(request):  
     
     redirect_response = customer_account_checker(request)

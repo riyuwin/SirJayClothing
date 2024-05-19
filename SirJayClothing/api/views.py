@@ -202,6 +202,11 @@ def insert_appointment(request):
                 # Get the selected service
                 service = Services.objects.get(id=services_selector)
 
+                # Check for existing appointment
+                existing_appointment = Appointment.objects.filter(customersName=customer, appointmentServices=service).exists()
+                if existing_appointment:
+                    return JsonResponse({'error': 'An appointment with this service already exists for this customer.'}, status=400)
+
                 # Default status
                 default_status = 'Pending'
 
@@ -228,7 +233,7 @@ def insert_appointment(request):
             return JsonResponse({'error': 'User is not authenticated.'}, status=401)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-    
+        
 @csrf_exempt
 def delete_appointment(request):
     if request.method == 'POST':  
@@ -259,32 +264,37 @@ def delete_categories(request):
 @csrf_exempt
 def insert_product_categories(request):
     if request.method == 'POST':
-        # Get the current user
         user = request.user
 
-        # Check if the user is authenticated
         if user.is_authenticated:
-            # Get form data
             productCategoriesName = request.POST.get('productCategory')
-            productDescription = request.POST.get('description') 
+            productDescription = request.POST.get('description')
 
-            # Get or create token for the user
-            token, _ = Token.objects.get_or_create(user=user)
- 
-            # Save appointment data to the database
-            category = Category.objects.create(
-                categoryName=productCategoriesName,
-                categoryDesc=productDescription, 
-            )
+            if not productCategoriesName:
+                return JsonResponse({'error': 'Missing required fields.'}, status=400)
 
-            # Redirect to the desired URL with the token as a query parameter
-            return redirect(f'/admin_site/product_categories/')
+            try:
+                token, _ = Token.objects.get_or_create(user=user)
+
+                # Check for existing category
+                existing_category = Category.objects.filter(categoryName=productCategoriesName).exists()
+                if existing_category:
+                    return JsonResponse({'message': 'A category with this name already exists.'}, status=200)
+
+                category = Category.objects.create(
+                    categoryName=productCategoriesName,
+                    categoryDesc=productDescription,
+                )
+
+                return JsonResponse({'redirect_url': '/admin_site/product_categories/'})
+
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
 
         else:
             return JsonResponse({'error': 'User is not authenticated.'}, status=401)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
-
 
 @csrf_exempt
 def update_product_categories(request):
@@ -325,7 +335,7 @@ def insert_supplier(request):
         # Check if the user is authenticated
         if user.is_authenticated:
             # Get form data
-            supplierName = request.POST.get('supplierName')
+            supplierNameText = request.POST.get('supplierName')
             contactNumber = request.POST.get('contactNumber') 
             emailAdd = request.POST.get('emailAdd') 
             address = request.POST.get('supplierAddress') 
@@ -333,9 +343,15 @@ def insert_supplier(request):
             # Get or create token for the user
             token, _ = Token.objects.get_or_create(user=user)
  
+            # Check for existing category
+            existing_category = Supplier.objects.filter(supplierName=supplierNameText).exists()
+            if existing_category:
+                return JsonResponse({'message': 'A supplier with this name already exists.'}, status=200)
+
+ 
             # Save appointment data to the database
             supplier = Supplier.objects.create(
-                supplierName=supplierName,
+                supplierName=supplierNameText,
                 contactNumber=contactNumber, 
                 supplierEmail=emailAdd, 
                 supplierAddress=address, 
@@ -397,12 +413,9 @@ def delete_supplier(request):
 @csrf_exempt
 def insert_product(request):
     if request.method == 'POST':
-        # Get the current user
         user = request.user
 
-        # Check if the user is authenticated
         if user.is_authenticated:
-            # Get form data
             productName = request.POST.get('productName')
             productQty = request.POST.get('productQty') 
             productUnit = request.POST.get('productUnit') 
@@ -410,28 +423,43 @@ def insert_product(request):
             productCategory = request.POST.get('productCategory') 
             supplierSelector = request.POST.get('supplierSelector') 
 
-            # Get or create token for the user
-            token, _ = Token.objects.get_or_create(user=user)
+            if not all([productName, productQty, productUnit, productPrice, productCategory, supplierSelector]):
+                return JsonResponse({'error': 'Missing required fields.'}, status=400)
 
-            # Assuming Supplier model has a field named 'id'
-            supplier_id = int(supplierSelector)  # Assuming supplierSelector is the ID of the Supplier
-            supplier_instance = Supplier.objects.get(id=supplier_id)
+            try:
+                token, _ = Token.objects.get_or_create(user=user)
 
-            category_id = int(productCategory)  # Assuming productCategory is the ID of the Category
-            category_instance = Category.objects.get(id=category_id)
- 
-            product = Supply.objects.create(
-                productName=productName,
-                productQty=productQty,
-                productUnit=productUnit,
-                productPrice=productPrice,
-                productCategory=category_instance,  # Assign the Category instance, not the ID or name
-                supplierName=supplier_instance,
-            )
+                supplier_id = int(supplierSelector)
+                supplier_instance = Supplier.objects.get(id=supplier_id)
 
-            # Redirect to the desired URL with the token as a query parameter
-            return redirect(f'/admin_site/manage_product/')
+                category_id = int(productCategory)
+                category_instance = Category.objects.get(id=category_id)
 
+                # Check for existing product
+                existing_product = Supply.objects.filter(
+                    productName=productName,
+                    productCategory=category_instance,
+                    supplierName=supplier_instance
+                ).exists()
+
+                if existing_product:
+                    return JsonResponse({'message': 'A product with the same name, category, and supplier already exists.'}, status=200)
+
+                product = Supply.objects.create(
+                    productName=productName,
+                    productQty=productQty,
+                    productUnit=productUnit,
+                    productPrice=productPrice,
+                    productCategory=category_instance,
+                    supplierName=supplier_instance,
+                )
+
+                return redirect(f'/admin_site/manage_product/')
+
+            except Supplier.DoesNotExist:
+                return JsonResponse({'error': 'Supplier not found.'}, status=404)
+            except Category.DoesNotExist:
+                return JsonResponse({'error': 'Category not found.'}, status=404)
         else:
             return JsonResponse({'error': 'User is not authenticated.'}, status=401)
     else:
@@ -525,6 +553,12 @@ def insert_services(request):
 
             # Get or create token for the user
             token, _ = Token.objects.get_or_create(user=user)
+
+            # Check for existing category
+            existing_category = Services.objects.filter(clothOffered=name,clothforSchool=school).exists()
+            if existing_category:
+                return JsonResponse({'message': 'A supplier with this name already exists.'}, status=200)
+
 
             # Save service data to the database
             service = Services.objects.create(

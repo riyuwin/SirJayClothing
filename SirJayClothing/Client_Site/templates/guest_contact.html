@@ -9,8 +9,7 @@
     
     {% load static %}
     <link rel="icon" type="image/x-icon" href="{% static 'assets/img/icon.ico' %}">
-
-    <link rel="stylesheet" type="text/css" href='{% static "/style.css" %}'>
+ 
 
     <!-- CSS here -->
     <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
@@ -28,76 +27,76 @@
     <link rel="stylesheet" href="{% static 'assets/css/nice-select.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     
-    <style> 
-
-        * {
+    <style>
+        body {
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            font-family: sans-serif;
+            background-color: #f5f5f5;
         }
 
-        .banner_holder{
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-us {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .contact-info {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 0;
-            padding: 20px;
-            background-color: #f9f9f9;
         }
 
-        h1 {
-            align-self: flex-start; 
-            margin-bottom: 15px;
-        }
-
-        h2{
-            text-align: left;
-        }
-
-        h3 {
-            align-self: flex-start; 
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .product-container {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            flex-wrap: wrap;
-            width: 100%;
-            max-width: 1200px;
-            margin-bottom: 70px;
-        }
-
-        .product-card {
-            border: 1px solid #ccc;
+        .contact-info a {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
             border-radius: 5px;
-            padding: 20px;
-            margin: 15px;
-            width: 300px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            flex-grow: 1;
+            transition: background-color 0.3s ease;
         }
 
-        .product-image {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-bottom: 10%;
+        .contact-info a:hover {
+            background-color: #0056b3;
         }
 
-        .product-name {
-            font-size: 1.2em;
-            margin: 10px 0;
+        .contact-info a i {
+            margin-right: 5px;
         }
 
-        .product-price {
-            color: green;
-            font-weight: 600;
+        .contact-info a.phone {
+            background-color: #28a745;
+        }
+
+        .contact-info a.facebook {
+            background-color: #3b5998;
+        }
+
+        .contact-info a.messenger {
+            background-color: #0084ff;
+        }
+
+        .contact-info a span {
+            margin-left: 5px;
+        }
+
+        .contact-info a i.fa {
+            font-size: 20px;
+            vertical-align: middle;
+        }
+
+        .contact-info a span {
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -204,88 +203,23 @@
     <!-- Header End -->
 </header>
 
-    <main>  
-        <div class="container-fluid banner_holder" style="background-color: rgba(194, 185, 185, 0.253); padding: 40px;">
-            <div class="container">
-                <h1>Services Offer</h1><br> 
-
+    <!-- Header End -->
+    <div class="single-slider position-relative hero-overly slider-height  d-flex align-items-center"
+        data-background="assets/img/hero/h1_hero.png">
+        <div class="container">
+            <div class="contact-us">
+                <h2>Contact Us</h2>
             </div>
-        
-            <div class="product-container">
-                <div class="container-fluid">        
-                    <h3>CAMARINES NORTE NATIONAL HIGH SCHOOL (CNNHS) UNIFORMS</h3><br>
-                </div>
-                
-                {% for service in services %}
-
-                    {% if service.clothforSchool == "Camarines Norte National High School" %} 
-
-                        <div class="product-card" id="product1">
-                            <!-- <img src="{% static 'assets/img/pants.jpg' %}" alt="Product 1" class="product-image"> -->
-                            {% if service.image %}
-                                <a href="{{ service.image.url }}"><img  src="{{ service.image.url }}" alt="{{ service.clothOffered }}"class="product-image"> </a>
-                            {% else %}
-                                No Image Available
-                            {% endif %} 
-                            <h4 class="product-name">{{ service.clothOffered }}</h4>
-                            <p class="product-price">Php {{ service.clothPrice }}</p><hr>
-                            <a href="/guest_services_details/?id={{ service.id }}" style="color: rgba(0, 0, 0, 0.507);">View Details</a>
-                        </div>
-                    {% endif %} 
-        
-                {% endfor %}
-            </div> 
-
-            <div class="product-container">
-                <div class="container-fluid">         
-                    <h3>MORENO INTEGRATED SCHOOL (MIS) UNIFORMS</h3><br>
-                </div>
-                {% for service in services %}
-
-                    {% if service.clothforSchool == "Moreno Integrated School" %} 
-
-                        <div class="product-card" id="product1">
-                            <!-- <img src="{% static 'assets/img/pants.jpg' %}" alt="Product 1" class="product-image"> -->
-                            {% if service.image %}
-                                <a href="{{ service.image.url }}"><img  src="{{ service.image.url }}" alt="{{ service.clothOffered }}"class="product-image"> </a>
-                            {% else %}
-                                No Image Available
-                            {% endif %} 
-                            <h4 class="product-name">{{ service.clothOffered }}</h4>
-                            <p class="product-price">Php {{ service.clothPrice }}</p><hr>
-                            <a href="/guest_services_details/?id={{ service.id }}" style="color: rgba(0, 0, 0, 0.507);">View Details</a>
-                        </div>
-                    {% endif %} 
-        
-                {% endfor %}
+            <div class="contact-info">
+                <a href="tel:(+63) 993-664-7951" class="phone"><i class="fa fa-phone"></i><span>(+63) 993-664-7951</span></a>
+                <a href="https://www.facebook.com/profile.php?id=100070609341992&mibextid=JRoKGi" class="facebook" target="_blank"><i
+                        class="fa fa-facebook"></i><span>Facebook: Jay Traquena</span></a>
+                <a href="https://www.facebook.com/profile.php?id=100070609341992&mibextid=JRoKGi" class="messenger" target="_blank"><i
+                        class="fa fa-comment"></i><span>Messenger: Jay Traquena</span></a>
             </div>
-
-            <div class="product-container">
-                <div class="container-fluid">         
-                    <h3>MABINI COLLEGES INC. UNIFORMS</h3><br>
-                </div>
-                {% for service in services %}
-
-                    {% if service.clothforSchool == "Mabini Colleges Inc." %} 
-
-                        <div class="product-card" id="product1">
-                            <!-- <img src="{% static 'assets/img/pants.jpg' %}" alt="Product 1" class="product-image"> -->
-                            {% if service.image %}
-                                <a href="{{ service.image.url }}"><img  src="{{ service.image.url }}" alt="{{ service.clothOffered }}"class="product-image"> </a>
-                            {% else %}
-                                No Image Available
-                            {% endif %} 
-                            <h4 class="product-name">{{ service.clothOffered }}</h4>
-                            <p class="product-price">Php {{ service.clothPrice }}</p><hr>
-                            <a href="/guest_services_details/?id={{ service.id }}" style="color: rgba(0, 0, 0, 0.507);">View Details</a>
-                        </div>
-                    {% endif %} 
-        
-                {% endfor %}
-            </div>
-            
         </div>
-    </main>
+    </div>
+
 
     <!-- JS here -->
     <script src="{% static './assets/js/vendor/modernizr-3.5.0.min.js' %}"></script>

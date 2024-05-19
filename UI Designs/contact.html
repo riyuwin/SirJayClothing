@@ -96,32 +96,98 @@
 </head>
 
 <body>
-    <!-- Header Start -->
-    <header>
-        <div class="header-area header_area">
-            <div class="main-header">
-                <div class="header-bottom header-sticky">
+        <!-- ? Preloader Start -->
+        <div id="preloader-active">
+            <div class="preloader d-flex align-items-center justify-content-center">
+                <div class="preloader-inner position-relative">
+                    <div class="preloader-circle"></div>
+                    <div class="preloader-img pere-text">
+                        <img src="{% static 'assets/img/logo/loder.png' %}" alt="">
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <!-- Preloader Start-->
+        <header>
+            <!-- Header Start -->
+            <div class="header-area header_area">
+                <div class="main-header">
+                 <div class="header-bottom header-sticky">
                     <!-- Logo -->
                     <div class="logo">
-                        <h1 style="font-weight: bolder;">Sir Jay's Clothing</h4>
+                        <h1 style="font-weight: bolder; width: 400px;">Sir Jay's Clothing</h4>
                     </div>
                     <div class="header-left  d-flex f-right align-items-center">
                         <!-- Main-menu -->
                         <div class="main-menu f-right d-none d-lg-block">
-                            <nav>
-                                <ul id="navigation">
-                                    <li><a href="index.html">Home</a></li>
+                            <nav> 
+                                <ul id="navigation">                                                                                                                                     
+                                    <li><a href="/">Home</a></li>
                                     <li><a href="#about">About</a></li>
-                                    <li><a href="services.html">Services</a></li>
-                                    <li><a href="contact.html">Contact</a></li>
+                                    <li><a href="/guest_services/">Services</a></li>
+                                    <li><a href="/guest_contact/">Contact</a></li>
                                 </ul>
                             </nav>
                         </div>
                         <!-- left Btn -->
-                        <div class="header-right-btn f-right d-none d-lg-block  ml-30">
-                            <a href="login.html" class="header-btn">Log In</a>
-                        </div>
-                    </div>
+    
+                        {% if not logged_in %}
+                            <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                                <a href="/account/login_page/" class="header-btn">Log In</a>
+                            </div>
+                        {% elif user_type == "Admin" %}
+                            <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                                <div class="dropdown-container"> 
+                                    <button id="dropdown-btn" type="button" class="header-btn">{{ username }}</button>
+                                    <div id="dropdown-menu" class="dropdown-menu">
+                                        <a href="/admin_site/manage_customer/" >
+                                            <button type="button" class="dropdown-item">Admin Site</button> 
+                                        </a>
+    
+                                        <form id="logoutForm" action="/api/auth/logout/" method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="Authorization" value="Token {{ user_token }}">  
+                                                <button type="submit" class="dropdown-item" >Logout</button> 
+                                        </form>
+    
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                                <div class="dropdown-container"> 
+                                    <button id="dropdown-btn" type="button" class="header-btn">{{ username }}</button>
+                                    <div id="dropdown-menu" class="dropdown-menu">
+                                        <a href="/account_information/" >
+                                            <button type="button" class="dropdown-item">Account Information</button> 
+                                        </a>
+    
+                                        <form id="logoutForm" action="/api/auth/logout/" method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="Authorization" value="Token {{ user_token }}">  
+                                                <button type="submit" class="dropdown-item" >Logout</button> 
+                                        </form>
+     
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+    
+                        <script>
+                            function toggleDropdown() {
+                                var dropdownMenu = document.getElementById("dropdown-menu");
+                                if (dropdownMenu.classList.contains("active")) {
+                                    dropdownMenu.classList.remove("active");
+                                } else {
+                                    dropdownMenu.classList.add("active");
+                                }
+                            }
+    
+                            document.getElementById("dropdown-btn").addEventListener("click", toggleDropdown);
+     
+                        </script>
+     
+                    </div>          
                     <!-- Mobile Menu -->
                     <div class="col-12">
                         <div class="mobile_menu d-block d-lg-none"></div>
@@ -129,6 +195,7 @@
                 </div>
             </div>
         </div>
+        <!-- Header End -->
     </header>
     <!-- Header End -->
     <div class="single-slider position-relative hero-overly slider-height  d-flex align-items-center"
