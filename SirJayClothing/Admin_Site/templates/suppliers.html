@@ -11,7 +11,7 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href='{% static "admin_style.css" %}'>
 
-    <title>Manage Product</title>
+    <title>Manage Supplier</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -123,10 +123,10 @@
 			<i class='bx bx-menu' ></i>
 			
 			<form action="#">
-				<div class="form-input">
+				<!-- <div class="form-input">
 					<input type="search" placeholder="Search...">
 					<button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
-				</div>
+				</div> -->
 			</form>
 			
 			
@@ -142,7 +142,7 @@
             {% else %}
                 <a href="#" class="profile">
                     <!-- <img src="img/logo.png"> -->
-                    <h5>{{username}}</h5>
+                    <h5>Hi, {{username}}!</h5>
                 </a> 
             {% endif %}
 		</nav>
@@ -281,7 +281,7 @@
                             <div class="table-wrapper">
                                 <div class="table-title">
                                     <div class="row">
-                                        <div class="col-sm-8"><h2><b>Product Details</b></h2></div> <br> <br> 
+                                        <div class="col-sm-8"><h2><b>Supplier Details</b></h2></div> <br> <br> 
                                     </div>
 
     
@@ -359,7 +359,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Product Category</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Supplier</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div> 
                 <div class="modal-footer">

@@ -122,10 +122,10 @@
 			<i class='bx bx-menu' ></i>
 			
 			<form action="#">
-				<div class="form-input">
+				<!-- <div class="form-input">
 					<input type="search" placeholder="Search...">
 					<button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
-				</div>
+				</div> -->
 			</form>
 			
 			
@@ -141,7 +141,7 @@
             {% else %}
                 <a href="#" class="profile">
                     <!-- <img src="img/logo.png"> -->
-                    <h5>{{username}}</h5>
+                    <h5>Hi, {{username}}!</h5>
                 </a> 
             {% endif %}
 		</nav>
@@ -290,7 +290,7 @@
                                         <div class="col-sm-6 d-flex align-items-center justify-content-start">
                                             <div class="search-box">
                                                 <i class="material-icons">&#xE8B6;</i>
-                                                <input type="text" class="form-control" placeholder="Search&hellip;">
+                                                <input type="text" id="searchInput" class="form-control" placeholder="Search&hellip;">
                                             </div> 
                                         </div>
 
@@ -303,7 +303,7 @@
                                     
                                 </div>
                                 
-                                <table class="table table-striped table-hover table-bordered">
+                                <table id="appointmentsTable" class="table table-striped table-hover table-bordered">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -334,7 +334,6 @@
                                             </tr>
                                         {% endfor %}
                                     </tbody>
-
                                 </table>
                                 
                             </div>
@@ -415,6 +414,27 @@
                     }
                 });
             });
+        });
+    </script>
+
+    <script>
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toLowerCase();
+            var table = document.getElementById('appointmentsTable');
+            var tr = table.getElementsByTagName('tr');
+
+            for (var i = 1; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName('td')[1]; // Name column
+                if (td) {
+                    var txtValue = td.textContent || td.innerText;
+                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }       
+            }
         });
     </script>
 	

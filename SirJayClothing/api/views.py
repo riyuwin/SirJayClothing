@@ -348,7 +348,8 @@ def insert_product_categories(request):
                     categoryDesc=productDescription,
                 )
 
-                return JsonResponse({'redirect_url': '/admin_site/product_categories/'})
+                #return JsonResponse({'redirect_url': '/admin_site/product_categories/'})
+                return redirect(f'/admin_site/product_categories/') 
 
             except Exception as e:
                 return JsonResponse({'error': str(e)}, status=500)
@@ -516,7 +517,7 @@ def insert_product(request):
                     supplierName=supplier_instance,
                 )
 
-                return redirect(f'/admin_site/manage_product/')
+                return redirect(f'/admin_site/manage_inventory/')
 
             except Supplier.DoesNotExist:
                 return JsonResponse({'error': 'Supplier not found.'}, status=404)
@@ -582,7 +583,7 @@ def delete_product(request):
         obj_to_delete.delete()
             
         # Redirect to the desired URL with the token as a query parameter
-        return redirect(f'/admin_site/manage_product/') 
+        return redirect(f'/admin_site/manage_inventory/') 
     
 
 @csrf_exempt
