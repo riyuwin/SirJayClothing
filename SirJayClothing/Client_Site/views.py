@@ -244,42 +244,56 @@ def ServicesDetailsPage(request):
     customer_api_url = request.build_absolute_uri('/api/customer/')
     appointment_details_api_url = request.build_absolute_uri('/api/appointment/appointment_details')
     services_api_url = request.build_absolute_uri('/api/inventory/services')
- 
-    customer_response = requests.get(customer_api_url)
-    appointment_details_response = requests.get(appointment_details_api_url)
-    services_details_response = requests.get(services_api_url)
 
     user = request.user
-    
-    user_id = request.user.id if request.user.is_authenticated else None
-    username = request.user.username if request.user.is_authenticated else None
 
-    # Check if the user is authenticated
+    user_id = user.id if user.is_authenticated else None
+    username = user.username if user.is_authenticated else None
+    token = None
+
     if user.is_authenticated:
-         
         # Get or create token for the user
         token, _ = Token.objects.get_or_create(user=user)
 
-        # Fetch all services from the database
-        db_services = Services.objects.all()
+    # Fetch all services from the database
+    db_services = Services.objects.all()
+    url_id = request.GET.get('id')
 
-        
-        url_id = request.GET.get('id')
+    # Initialize data containers
+    customer_data = None
+    appointment_data = None
+    services_data = None
 
-        # Check if the request was successful (status code 200)
-        if appointment_details_response.status_code == 200:
-            # Parse the JSON response
-            customer_data = customer_response.json() 
-            appointment_data = appointment_details_response.json() 
-            services_data = services_details_response.json() 
-    
-            return render(request, 'guest_services_details.html', {'logged_in': user.is_authenticated, 'url_id': url_id, 'services': db_services, 'user_id': user_id, 'username': username,})
-        else:
-            # Handle the case when the API request fails (e.g., return an error message)
-            return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
-    else:
-        return render(request, 'error_template.html', {'message': 'User is not authenticated.'})
-    
+    # Check if all requests are successful (status code 200)
+    try:
+        customer_response = requests.get(customer_api_url)
+        customer_response.raise_for_status()
+        customer_data = customer_response.json()
+
+        appointment_details_response = requests.get(appointment_details_api_url)
+        appointment_details_response.raise_for_status()
+        appointment_data = appointment_details_response.json()
+
+        services_details_response = requests.get(services_api_url)
+        services_details_response.raise_for_status()
+        services_data = services_details_response.json()
+
+    except requests.exceptions.RequestException as e:
+        # Handle the case when the API request fails (e.g., return an error message)
+        return render(request, 'error_template.html', {'message': f'Failed to fetch data from API: {e}'})
+
+    return render(request, 'guest_services_details.html', {
+        'logged_in': user.is_authenticated,
+        'url_id': url_id,
+        'services': db_services,
+        'user_id': user_id,
+        'username': username,
+        'customer_data': customer_data,
+        'appointment_data': appointment_data,
+        'services_data': services_data,
+    })
+
+
 def admin_account_checker(request): 
     user = request.user
 
@@ -302,4 +316,6 @@ def customer_account_checker(request):
 
         if user_type != "Customer":
             return redirect('/api/authorized_template/')
+    else:
+        return redirect('/account/login_page/')
     return None  # Return None if the user is an admin or if the user is not authenticated

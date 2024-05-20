@@ -326,7 +326,7 @@
                                                             <div class="col-sm-12">  
                                                                 <h5>Appointment Details</h5> <br>
                                                                 {% for service in services %}
-                                                                    {% if service.id|stringformat:"s" == appointment.id|stringformat:"s" %}
+                                                                    {% if service.id|stringformat:"s" == appointment.appointmentServices|stringformat:"s" %}
                                                                         <p>Availed Services: <b> {{ service.clothOffered }} </b> </p> 
                                                                         <p>School: <b> {{ service.clothforSchool }} </b> </p> 
                                                                     {% endif %}
@@ -382,7 +382,7 @@
                                                                             {% for product in products %}
                                                                                 {% if necessaryitem.productName|stringformat:"s" == product.id|stringformat:"s" %}
                                                                                 <tr>
-                                                                                    <td>{{ forloop.counter }}</td>
+                                                                                    <td>{{ forloop.parentloop.counter }}</td>
                                                                                     <td>{{ product.productName }}</td>
                                                                                     <td>{{ necessaryitem.productQty }}</td>
                                                                                     <td>

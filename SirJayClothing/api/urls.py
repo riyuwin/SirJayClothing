@@ -42,6 +42,7 @@ urlpatterns = [
     path('inventory/services/<int:pk>/', ServicesDetail.as_view()), 
      
     path('authorized_template/', views.authorized_template_page, name='authorized_template'),
+    path('error_template/', views.error_template_page, name='error_template'),
 
     path('account_registration/', views.insert_customer_view, name='account_registration'),
 

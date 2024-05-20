@@ -267,10 +267,12 @@ def insert_appointment(request):
                 default_status = 'Pending'
 
                 # Check for existing appointment
-                existing_appointment = Appointment.objects.filter(customersName=customer.id, appointmentServices=service.id, appointmentStatus=default_status).exists()
+                existing_appointment = Appointment.objects.filter(customersName=customer.id, appointmentServices=service.id, appointmentStatus=default_status, appointmentDate=appointment_date).exists()
 
                 if existing_appointment:
-                    return JsonResponse({'error': 'An appointment with this service already exists for this customer.'}, status=400) 
+                    
+                    return redirect(f'/api/error_template/?status=error123')
+                    #return JsonResponse({'error': 'An appointment with this service already exists for this customer.'}, status=400) 
 
                 # Save appointment data to the database
                 appointment = Appointment.objects.create(
@@ -767,3 +769,6 @@ def customer_account_checker(request):
 
 def authorized_template_page(request):
     return render(request, 'authorized_template.html', {'message': 'Authorized user only.'})
+
+def error_template_page(request):
+    return render(request, 'insertion_error_template.html', {'message': 'Authorized user only.'})

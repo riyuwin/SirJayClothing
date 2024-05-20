@@ -210,10 +210,34 @@
                 <h1>Services Offer</h1><br> 
 
             </div>
+
+            <div class="product-container">
+                <div class="container-fluid">         
+                    <h3>BASUD NATIONAL HIGH SCHOOL UNIFORMS</h3><br>
+                </div>
+                {% for service in services %}
+
+                    {% if service.clothforSchool == "Basud National High School" %} 
+
+                        <div class="product-card" id="product1">
+                            <!-- <img src="{% static 'assets/img/pants.jpg' %}" alt="Product 1" class="product-image"> -->
+                            {% if service.image %}
+                                <a href="{{ service.image.url }}"><img  src="{{ service.image.url }}" alt="{{ service.clothOffered }}"class="product-image"> </a>
+                            {% else %}
+                                No Image Available
+                            {% endif %} 
+                            <h4 class="product-name">{{ service.clothOffered }}</h4>
+                            <p class="product-price">Php {{ service.clothPrice }}</p><hr>
+                            <a href="/guest_services_details/?id={{ service.id }}" style="color: rgba(0, 0, 0, 0.507);">View Details</a>
+                        </div>
+                    {% endif %} 
+        
+                {% endfor %}
+            </div>
         
             <div class="product-container">
                 <div class="container-fluid">        
-                    <h3>CAMARINES NORTE NATIONAL HIGH SCHOOL (CNNHS) UNIFORMS</h3><br>
+                    <h3>CAMARINES NORTE NATIONAL HIGH SCHOOL UNIFORMS</h3><br>
                 </div>
                 
                 {% for service in services %}
@@ -238,11 +262,11 @@
 
             <div class="product-container">
                 <div class="container-fluid">         
-                    <h3>MORENO INTEGRATED SCHOOL (MIS) UNIFORMS</h3><br>
+                    <h3>MABINI COLLEGES INC. UNIFORMS</h3><br>
                 </div>
                 {% for service in services %}
 
-                    {% if service.clothforSchool == "Moreno Integrated School" %} 
+                    {% if service.clothforSchool == "Mabini Colleges Inc." %} 
 
                         <div class="product-card" id="product1">
                             <!-- <img src="{% static 'assets/img/pants.jpg' %}" alt="Product 1" class="product-image"> -->
@@ -260,13 +284,15 @@
                 {% endfor %}
             </div>
 
+            
+
             <div class="product-container">
                 <div class="container-fluid">         
-                    <h3>MABINI COLLEGES INC. UNIFORMS</h3><br>
+                    <h3>MORENO INTEGRATED SCHOOL UNIFORMS</h3><br>
                 </div>
                 {% for service in services %}
 
-                    {% if service.clothforSchool == "Mabini Colleges Inc." %} 
+                    {% if service.clothforSchool == "Moreno Integrated School" %} 
 
                         <div class="product-card" id="product1">
                             <!-- <img src="{% static 'assets/img/pants.jpg' %}" alt="Product 1" class="product-image"> -->
