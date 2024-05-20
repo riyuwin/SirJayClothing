@@ -111,7 +111,7 @@ def insert_customer_view(request):
         # Return response
         #return JsonResponse({'message': 'Client_Site inserted successfully.'}, status=201)
 
-        return redirect('/customer_add_customer')  # Replace '/appointment.html' with your desired URL
+        return redirect('/customer_add_customer')  
 
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
@@ -120,9 +120,7 @@ def insert_customer_view(request):
 @csrf_exempt
 def insert_necessary_items(request):
     if request.method == 'POST':
-        try:
-            
-
+        try:  
             # Get form data
             appointment_selected_id = request.POST.get('appointmentselectedId')
             product_qty = int(request.POST.get('productQty'))
@@ -157,10 +155,11 @@ def insert_necessary_items(request):
                 # Update productQty by subtracting product_qty
                 product_instance.productQty -= product_qty
                 product_instance.save()  # Save the updated quantity
+
                 url_id = request.GET.get('id')   
 
                 # Return success response
-                return redirect(f'/admin_site/appointment_details?id={appointment_selected_id}')  # Replace with your desired URL
+                return redirect(f'/admin_site/appointment_details?id={appointment_selected_id}')  
 
             else:
                 # Return error response if quantity is insufficient
@@ -172,6 +171,66 @@ def insert_necessary_items(request):
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+@csrf_exempt
+def update_necessary_items(request):
+    if request.method == 'POST':
+        user = request.user
+
+        if user.is_authenticated:  
+            # Get form data
+            necessaryitemsID = request.POST.get('necessaryitemsID')
+            editproductId = int(request.POST.get('editproductId'))
+            editproductQty = int(request.POST.get('editproductQty')) 
+            appointmentID = int(request.POST.get('appointmentID'))  
+ 
+            necessaryItems = get_object_or_404(NecessaryItems, id=necessaryitemsID) 
+            appointment_instance = Supply.objects.get(id=editproductId) 
+
+            # Get the Product instance corresponding to the productId
+            product_instance = Supply.objects.get(id=editproductId)
+            
+            if necessaryItems.productQty <= editproductQty:
+                product_added = editproductQty - necessaryItems.productQty  
+
+                product_instance.productQty += product_added
+                product_instance.save()  # Save the updated quantity
+                
+            elif necessaryItems.productQty >= editproductQty:
+                if product_instance.productQty >= editproductQty:                
+                    # Update productQty by subtracting product_qty
+                    product_subtracted = necessaryItems.productQty - editproductQty 
+
+                    product_instance.productQty -= product_subtracted
+                    product_instance.save()  # Save the updated quantity
+
+            necessaryItems.productQty = editproductQty
+            necessaryItems.productName = appointment_instance 
+            necessaryItems.save()
+
+            return redirect(f'/admin_site/appointment_details/?id={appointmentID}')
+        else:
+            return JsonResponse({'error': 'User is not authenticated.'}, status=401)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+@csrf_exempt
+def delete_necessary_items(request):
+    if request.method == 'POST':  
+        # Get form data
+        necessaryID = request.POST.get('deletecategoryID') 
+        appointmentName = request.POST.get('appointmentName') 
+
+        print(f'NecessaryID: {necessaryID} |')
+
+        obj_to_delete = NecessaryItems.objects.get(id=necessaryID)  
+        obj_to_delete.delete()
+            
+        # Redirect to the desired URL with the token as a query parameter
+        return redirect(f'/admin_site/appointment_details/?id={appointmentName}') 
+
+
 
 @csrf_exempt
 def insert_appointment(request):
@@ -195,20 +254,23 @@ def insert_appointment(request):
             # Get or create token for the user
             token, _ = Token.objects.get_or_create(user=user)
 
-            try:
-                # Get the customer using the token key (not the Token object)
+            try: 
                 customer = Customer.objects.get(accountToken=token.key)
 
                 # Get the selected service
                 service = Services.objects.get(id=services_selector)
 
-                # Check for existing appointment
-                existing_appointment = Appointment.objects.filter(customersName=customer, appointmentServices=service).exists()
-                if existing_appointment:
-                    return JsonResponse({'error': 'An appointment with this service already exists for this customer.'}, status=400)
+                print(customer.id, 'asda')
+                print(service.id, 'service')
 
                 # Default status
                 default_status = 'Pending'
+
+                # Check for existing appointment
+                existing_appointment = Appointment.objects.filter(customersName=customer.id, appointmentServices=service.id, appointmentStatus=default_status).exists()
+
+                if existing_appointment:
+                    return JsonResponse({'error': 'An appointment with this service already exists for this customer.'}, status=400) 
 
                 # Save appointment data to the database
                 appointment = Appointment.objects.create(
@@ -217,7 +279,7 @@ def insert_appointment(request):
                     customerNotes=appointment_notes,  
                     appointmentStatus=default_status,
                     appointmentQty=appointment_qty,
-                    customersName=customer,  # This should be the customer object, not customer.id
+                    customersName=customer,   
                     appointmentServices=service,
                 )
 
@@ -241,7 +303,7 @@ def delete_appointment(request):
         appointmentID = request.POST.get('appointmentID') 
 
 
-        obj_to_delete = Appointment.objects.get(id=appointmentID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete = Appointment.objects.get(id=appointmentID)   
         obj_to_delete.delete()
             
         # Redirect to the desired URL with the token as a query parameter
@@ -254,7 +316,7 @@ def delete_categories(request):
         # Get form data
         categoryID = request.POST.get('deletecategoryID')  
 
-        obj_to_delete = Category.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete = Category.objects.get(id=categoryID)   
         obj_to_delete.delete()
             
         # Redirect to the desired URL with the token as a query parameter
@@ -404,7 +466,7 @@ def delete_supplier(request):
         # Get form data
         categoryID = request.POST.get('deletecategoryID')  
 
-        obj_to_delete = Supplier.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete = Supplier.objects.get(id=categoryID)   
         obj_to_delete.delete()
             
         # Redirect to the desired URL with the token as a query parameter
@@ -474,19 +536,18 @@ def update_product(request):
         # Check if the user is authenticated
         if user.is_authenticated:
             # Get form data
-            productId = request.POST.get('productIDSelected')  # Corrected variable name
+            productId = request.POST.get('productIDSelected')   
             productName = request.POST.get('productName')
             productQty = request.POST.get('productQty') 
             productUnit = request.POST.get('productUnit') 
             productPrice = request.POST.get('productPrice') 
             productCategory = request.POST.get('productCategory') 
             supplierSelector = request.POST.get('supplierSelector')    
-
-            # Assuming Supplier model has a field named 'id'
-            supplier_id = int(supplierSelector)  # Assuming supplierSelector is the ID of the Supplier
+ 
+            supplier_id = int(supplierSelector)  
             supplier_instance = Supplier.objects.get(id=supplier_id)
 
-            category_id = int(productCategory)  # Assuming productCategory is the ID of the Category
+            category_id = int(productCategory)   
             category_instance = Category.objects.get(id=category_id)
             
             print(productId)
@@ -504,7 +565,7 @@ def update_product(request):
             supply.save()
 
             # Redirect or return success response
-            return redirect('/admin_site/manage_product/')  # Redirect URL corrected
+            return redirect('/admin_site/manage_inventory/')  # Redirect URL corrected
         else:
             return JsonResponse({'error': 'User is not authenticated.'}, status=401)
     else:
@@ -517,7 +578,7 @@ def delete_product(request):
         # Get form data
         categoryID = request.POST.get('deletecategoryID')  
 
-        obj_to_delete = Supply.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete = Supply.objects.get(id=categoryID)  
         obj_to_delete.delete()
             
         # Redirect to the desired URL with the token as a query parameter
@@ -530,7 +591,7 @@ def delete_customer(request):
         # Get form data
         categoryID = request.POST.get('deletecategoryID')  
 
-        obj_to_delete = Supply.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete = Supply.objects.get(id=categoryID)  
         obj_to_delete.delete()
             
         # Redirect to the desired URL with the token as a query parameter
@@ -566,7 +627,7 @@ def insert_services(request):
                 clothforSchool=school, 
                 clothPrice=price,
                 clothNotes=description,
-                image=clothImg,  # Assign the uploaded file
+                image=clothImg,  
             )
 
             # Redirect to the desired URL
@@ -612,7 +673,7 @@ def delete_services(request):
         # Get form data
         categoryID = request.POST.get('deletecategoryID')  
 
-        obj_to_delete = Services.objects.get(id=categoryID)  # Replace obj_id with the ID of the object you want to delete
+        obj_to_delete = Services.objects.get(id=categoryID)  
         obj_to_delete.delete()
             
         # Redirect to the desired URL with the token as a query parameter
@@ -651,8 +712,7 @@ def insert_appointment_query(request):
     if request.method == 'POST':
         user = request.user
 
-        if user.is_authenticated:
-            # Tama na pagkakamali: Ibinibigay ang tamang instance ng Appointment
+        if user.is_authenticated: 
             appointmentID = request.POST.get('appointmentID')
             query = request.POST.get('message') 
 
@@ -666,7 +726,7 @@ def insert_appointment_query(request):
 
             # Save service data to the database
             service = AppointmentQuery.objects.create(
-                appointmentName=appointment_instance,  # Tamang pagkakamali: Ibinibigay ang tamang instance ng Appointment
+                appointmentName=appointment_instance,   
                 userFeedback=user_type,  
                 message=query,  
             )

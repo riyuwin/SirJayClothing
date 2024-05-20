@@ -69,7 +69,7 @@ def register_user(request):
             )
 
             #return Response(response_data, status=status.HTTP_201_CREATED)
-            return redirect('/account/login_page/')  # Replace '/appointment.html' with your desired URL
+            return redirect('/account/login_page/')   
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
  
@@ -96,9 +96,8 @@ def user_login(request):
             # Check if user is superuser or admin
             if user.is_superuser:
                 # Redirect to admin dashboard or specific URL for superuser
-                return redirect('/admin_site/manage_customer/')  # Example redirect to admin dashboard
-            else:
-                # Redirect to index.html with a token query parameter for normal users
+                return redirect('/admin_site/dashboard/')  # Example redirect to admin dashboard
+            else: 
                 return redirect(f'/?token={token.key}')
 
         #return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)

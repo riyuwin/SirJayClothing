@@ -39,7 +39,7 @@
             </li>
             
 			<li> 
-				<a href="#">
+				<a href="/admin_site/dashboard">
 					<i class='bx bxs-dashboard' ></i>
 					<span class="text">Dashboard</span>
 				</a>
@@ -277,69 +277,80 @@
                     </script>
                     </head>
                     <body>
-                    <div class="container-xl">
-                        <div class="table-responsive">
-                            <div class="table-wrapper">
-                                <div class="table-title">
-                                    <div class="row">
-                                        <div class="col-sm-8"><h2><b>Customer Details</b></h2></div> <br> <br> 
-                                    </div>
-
-                                    <!-- FIXED -->
-                                    <div class="row">
-                                        <div class="col-sm-6 d-flex align-items-center justify-content-start">
-                                            <div class="search-box">
-                                                <i class="material-icons">&#xE8B6;</i>
-                                                <input type="text" class="form-control" placeholder="Search&hellip;">
-                                            </div> 
-                                        </div>
-
-                                        <div class="col-sm-6 d-flex align-items-center justify-content-end">
-                                            <div class="search-button">
-                                                <!-- <button class="btn btn-primary" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#addCategory">+ Add Product Category</button> -->
-                                            </div> 
-                                        </div>
-                                    </div>
-                                    
+                <div class="container-xl">
+                    <div class="table-responsive">
+                        <div class="table-wrapper">
+                            <div class="table-title">
+                                <div class="row">
+                                    <div class="col-sm-8"><h2><b>Customer Details</b></h2></div> <br> <br> 
                                 </div>
-                                <table class="table table-striped table-hover table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Name<i class="fa fa-sort"></i></th>
-                                            <th>Gender</th>
-                                            <th>Phone</th>
-                                            <th>Email</th>
-                                            <th>Action</th>
-                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody> 
-                                        {% for customer in customers %}
-                                        <tr>
-                                            <td>{{ forloop.counter }}</td> 
-                                            <td>{{ customer.customerFname }} {{ customer.customerMname }} {{ customer.customerLname }}</td>
-                                            <td>{{ customer.customerGender }}</td> 
-                                            <td>{{ customer.customerPhone }}</td> 
-                                            <td>{{ customer.customerEmail }}</td>  
-                                            <td>
-                                                <!-- <a href="#" class="edit" title="Edit" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#editCategory" onclick="setEditData('{{ category.id }}')"><i class="material-icons">&#xE254;</i></a> -->
-                                                <a href="/admin_site/manage_customer_details?id={{ customer.id }}" class="edit" title="Edit" data-toggle="tooltip"   ><i class="material-icons">&#xE254;</i></a>
-                                                <a href="#" class="delete" title="Delete"  onclick="setDeleteData('{{ customer.id }}')"><i class="material-icons">&#xE872;</i></a>
-                                            </td>
-                                        </tr>
-                                         {% endfor %}
-                                    </tbody>
-                                </table>
+
+                                <!-- FIXED -->
+                                <div class="row">
+                                    <div class="col-sm-6 d-flex align-items-center justify-content-start">
+                                        <div class="search-box">
+                                            <i class="material-icons">&#xE8B6;</i>
+                                            <input type="text" class="form-control" id="searchInput" placeholder="Search&hellip;">
+                                        </div> 
+                                    </div>
+                                </div>
                                 
                             </div>
-                        </div>  
-                    </div>   
+
+                            <table class="table table-striped table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name<i class="fa fa-sort"></i></th>
+                                        <th>Gender</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customerTableBody">
+                                    {% for customer in customers %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td> 
+                                        <td>{{ customer.customerFname }} {{ customer.customerLname }}</td>
+                                        <td>{{ customer.customerGender }}</td> 
+                                        <td>{{ customer.customerPhone }}</td> 
+                                        <td>{{ customer.customerEmail }}</td>  
+                                        <td>
+                                            <a href="/admin_site/manage_customer_details?id={{ customer.id }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                            <a href="#" class="delete" title="Delete" onclick="setDeleteData('{{ customer.id }}')"><i class="material-icons">&#xE872;</i></a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                            <script>
+                                document.getElementById('searchInput').addEventListener('keyup', function() {
+                                    var searchInput = document.getElementById('searchInput').value.toLowerCase();
+                                    var tableRows = document.getElementById('customerTableBody').getElementsByTagName('tr');
+                                    
+                                    for (var i = 0; i < tableRows.length; i++) {
+                                        var row = tableRows[i];
+                                        var name = row.getElementsByTagName('td')[1].textContent.toLowerCase();
+                                        
+                                        if (name.includes(searchInput)) {
+                                            row.style.display = '';
+                                        } else {
+                                            row.style.display = 'none';
+                                        }
+                                    }
+                                });
+                                </script>
+                            
+                        </div>
+                    </div>  
+                </div>   
 
 				
-				
-				</div>
+				 
 			</div>
+            
 		</main>
 		<!-- MAIN -->
 	</section>

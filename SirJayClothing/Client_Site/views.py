@@ -40,31 +40,43 @@ def ServicesPage(request):
     
     user_id = request.user.id if request.user.is_authenticated else None
     username = request.user.username if request.user.is_authenticated else None
+ 
 
-    user_type = 'Admin' if user.is_staff or user.is_superuser else 'Customer'
-    # Check if the user is authenticated
-    if user.is_authenticated:
-         
-        # Get or create token for the user
-        token, _ = Token.objects.get_or_create(user=user)
+    # Fetch all services from the database
+    db_services = Services.objects.all()
 
-        # Fetch all services from the database
-        db_services = Services.objects.all()
+    # Check if the request was successful (status code 200)
+    if appointment_details_response.status_code == 200:
+        # Parse the JSON response
+        customer_data = customer_response.json() 
+        appointment_data = appointment_details_response.json() 
+        services_data = services_details_response.json() 
 
-        # Check if the request was successful (status code 200)
-        if appointment_details_response.status_code == 200:
-            # Parse the JSON response
-            customer_data = customer_response.json() 
-            appointment_data = appointment_details_response.json() 
-            services_data = services_details_response.json() 
-    
-            return render(request, 'guest_services.html', {'logged_in': user.is_authenticated, 'customers': customer_data, 'account_token': token, 'appointment_details': appointment_data, 'services': db_services, 'user_id': user_id, 'username': username, 'user_type': user_type})
-        else:
-            # Handle the case when the API request fails (e.g., return an error message)
-            return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'}) 
+        return render(request, 'guest_services.html', {'logged_in': user.is_authenticated, 'customers': customer_data, 'appointment_details': appointment_data, 'services': db_services, 'user_id': user_id, 'username': username})
     else:
-        return render(request, 'error_template.html', {'message': 'User is not authenticated.'})
+        # Handle the case when the API request fails (e.g., return an error message)
+        return render(request, 'error_template.html', {'message': 'Failed to fetch data from API'})  
     
+#@login_required
+def LaunchAboutPage(request): 
+    user_id = request.user.id if request.user.is_authenticated else None
+    username = request.user.username if request.user.is_authenticated else None
+    user_token = None 
+
+    user = request.user
+
+    if request.user.is_authenticated:
+        try:
+            user_token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            # Handle the case where the token doesn't exist for the user
+            pass
+    
+    user_type = 'Admin' if user.is_staff or user.is_superuser else 'Customer'
+    return render(request, "guest_about.html", {'logged_in': request.user.is_authenticated, 'user_id': user_id, 'username': username, 'user_token': user_token, 'user_type': user_type})
+ 
+
+
 #@login_required
 def LaunchContact(request): 
     user_id = request.user.id if request.user.is_authenticated else None
@@ -212,8 +224,7 @@ def CustomerAppointmentPage(request):
             return JsonResponse({'error': 'ID parameter is missing.'}, status=400)
 
         # Get or create token for the user
-        token, _ = Token.objects.get_or_create(user=user)
-
+        token, _ = Token.objects.get_or_create(user=user) 
 
         # Check if the request was successful (status code 200)
         if appointment_details_response.status_code == 200:

@@ -46,7 +46,7 @@
             </li>
             
 			<li> 
-				<a href="#">
+				<a href="/admin_site/dashboard">
 					<i class='bx bxs-dashboard' ></i>
 					<span class="text">Dashboard</span>
 				</a>
@@ -289,11 +289,13 @@
                                 <div class="table-title">
                                     <div class="row">
                                         <div class="col-sm-6"> 
-                                             <h2 style="font-weight: 1000; font-size: 22px;"> APPOINTMENT INFORMATION</h2> 
+                                             <h2 style="font-weight: 1000; font-size: 22px;"> APPOINTMENT INFORMATION</h2>
+                                             <hr> 
                                         </div> 
 
                                         <div class="col-sm-6"> 
                                             <h2 style="font-weight: 1000; font-size: 22px;"> NECESSARY ITEMS</h2>  
+                                            <hr>
                                         </div>
                                     </div> <br>
                                     
@@ -301,12 +303,12 @@
                                     
                                                 <div class="row" > 
                                                     <div class="col-sm-6">
-                                                        <div class="row">
+                                                        <div class="row" style=" padding: 20px">
                                                             <div class="col-sm-12">  
-                                                                <h2>{{ customer.customerFname }} {{ customer.customerMname }} {{ customer.customerLname }}</h2> 
+                                                                <h1 style="font-weight: 800; font-size: 30px">{{ customer.customerFname }} {{ customer.customerMname }} {{ customer.customerLname }}</h1> 
                                                                 <h7>{{ customer.customerEmail }}</h7> <br><br>
                                                                 
-                                                                <p>Appointment Status: <b>{{ appointment.appointmentStatus }}</b></h7> <br>
+                                                                <p>Appointment Status: <b>{{ appointment.appointmentStatus }}</b></h7>  
                                                                 
                                                                             
                                                             </div>
@@ -314,17 +316,23 @@
                                                             <div class="col-sm-12">  
                                                                 <form action="/api/update_appointment/?id={{ appointment.id }}" method="post">
                                                                     {% csrf_token %}
-                                                                    <button type="submit" name="status" value="Pending" class="btn btn-primary">PENDING</button>
-                                                                    <button type="submit" name="status" value="Declined" class="btn btn-danger">DECLINED</button>
-                                                                    <button type="submit" name="status" value="Done" class="btn btn-success">DONE</button>
+                                                                    <button type="submit" name="status" value="Accepted" class="btn btn-primary">Accepted</button>
+                                                                    <button type="submit" name="status" value="Declined" class="btn btn-danger">Declined</button>
+                                                                    <button type="submit" name="status" value="Completed" class="btn btn-success">Completed</button>
                                                                 </form>
                                                                 <hr> 
                                                             </div>
 
                                                             <div class="col-sm-12">  
                                                                 <h5>Appointment Details</h5> <br>
-                                                                <p id="appointmentDateText">Appointment Date:  {{ appointment.appointmentDate }} </p>
-                                                                <p id="appointmentTimeText">Appointment Time:  {{ appointment.appointmentTime }} </p> 
+                                                                {% for service in services %}
+                                                                    {% if service.id|stringformat:"s" == appointment.id|stringformat:"s" %}
+                                                                        <p>Availed Services: <b> {{ service.clothOffered }} </b> </p> 
+                                                                        <p>School: <b> {{ service.clothforSchool }} </b> </p> 
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                                <p id="appointmentDateText">Appointment Date:   {{ appointment.appointmentDate }}   </p>
+                                                                <p id="appointmentTimeText">Appointment Time:   {{ appointment.appointmentTime }}   </p> 
                                                             </div>
 
                                                             <div class="col-sm-12">  
@@ -341,7 +349,7 @@
 
                                                     
 
-                                                    <div class="col-sm-6">
+                                                    <div class="col-sm-6" style=" padding: 20px">
 
                                                         <div class="row">
                                                             <div class="col-sm-6 d-flex align-items-center justify-content-start">
@@ -369,22 +377,22 @@
                                                             </thead>
                                                             
                                                             <tbody>
-                                                                {% for necessaryitem in necessaryitems %} 
-                                                                                                                                
+                                                                {% for necessaryitem in necessaryitems %}
                                                                     {% if necessaryitem.appointmentName|stringformat:"s" == request.GET.id|stringformat:"s" %}
-                                                                        <tr> 
-                                                                            {% for product in products %} 
+                                                                            {% for product in products %}
                                                                                 {% if necessaryitem.productName|stringformat:"s" == product.id|stringformat:"s" %}
-                                                                                    <td>{{ forloop.counter }}</td>  
+                                                                                <tr>
+                                                                                    <td>{{ forloop.counter }}</td>
                                                                                     <td>{{ product.productName }}</td>
-                                                                                    <td>{{ necessaryitem.productQty }}</td> 
+                                                                                    <td>{{ necessaryitem.productQty }}</td>
                                                                                     <td>
-                                                                                        <a href="/admin_site/appointment_details/?id={{ appointment.id }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                                                                        <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                                                                    </td> 
+                                                                                        <a class="edit" title="Edit" data-toggle="tooltip" onclick="setEditData('{{ necessaryitem.id }}', '{{ necessaryitem.productQty }}', '{{ product.id }}', '{{ necessaryitem.appointmentName }}')"><i class="material-icons">&#xE254;</i></a>
+                                                                                        <a class="delete" title="Delete" onclick="setDeleteData('{{ necessaryitem.id }}', '{{ necessaryitem.appointmentName }}')"><i class="material-icons">&#xE872;</i></a>
+                                                                                        <!-- <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a> -->
+                                                                                    </td>
+                                                                                </tr>   
                                                                                 {% endif %}
-                                                                            {% endfor %} 
-                                                                        </tr>
+                                                                            {% endfor %}
                                                                     {% endif %}
                                                                 {% endfor %}
                                                             </tbody>
@@ -489,7 +497,7 @@
                                     <div class="col-md-6">
                                         <label for="customersName">Product Name:</label><br>
 
-                                        <select name="productId" class="form-control" id="productId">
+                                        <select name="productId" class="form-control" id="productId" required>
                                             <option value="">--- Select ID ---</option>
                                             {% for i in products %}
                                                 <option value="{{ i.id }}">{{ i.productName }}</option>
@@ -500,11 +508,11 @@
 
                                     <div class="col-md-6">
                                         <label for="customersGender">Product Qty:</label>
-                                        <input type="number" class="form-control" name="productQty" id="productQty"><br>
+                                        <input type="number" class="form-control" name="productQty" id="productQty" required><br>
                                     </div>
 
                                     <div class="col-md-12">
-                                        <input type="submit" class="btn btn-primary" value="+ Add Necessary Item" style="width: 100%"><br>
+                                        <input type="submit" class="btn btn-primary" value="+ Add Necessary Item" style="width: 100%" required><br>
                                     </div>
                                     
                                 </div>
@@ -547,6 +555,8 @@
 
 	</section> 
 	<!-- CONTENT -->
+
+
  
 	
 
@@ -592,12 +602,115 @@
     </script>
 
 
-                {% endif %}
+    <!-- Modal -->
+    <div class="modal fade" id="editProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="color: black;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Services Offers</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editForm" action="{% url 'update_necessary_items' %}" enctype="multipart/form-data" method="POST">
+                    <div class="modal-body">
 
-            {% endfor %}    
+                        <input type="hidden" class="form-control" name="necessaryitemsID" id="necessaryitemsID" placeholder="Hidden ID">
+                        <input type="hidden" class="form-control" name="appointmentID" id="appointmentID" placeholder="Hidden ID">
+                        
+                        <div class="form-group">
+                            <label for="productId">Product Name:</label>
+                            <select name="editproductId" class="form-control" id="editproductId" required>
+                                <option value="">--- Select Product ---</option>
+                                {% for product in products %}
+                                    <option value="{{ product.id }}">{{ product.productName }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-        {% endif %}
-    {% endfor %}
+                        <div class="form-group">
+                            <label for="productQty">Product Qty:</label>
+                            <input type="number" class="form-control" name="editproductQty" id="editproductQty" required>
+                        </div>
+                        <hr> 
+
+                        <h7 style="font-weight: bold;">Inventory</h7><br>
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Product Name <i class="fa fa-sort"></i></th>
+                                    <th>Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ product.productName }}</td>
+                                        <td>{{ product.productQty }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="color: black;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this Necessary Items?</p>
+                </div>
+                <div class="modal-footer">
+                    <form id="deleteForm" action="{% url 'delete_necessary_items' %}" method="POST">
+                        <input type="hidden" id="deletecategoryID" name="deletecategoryID" >
+                        <input type="hidden" id="appointmentName" name="appointmentName" >
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn" style="background-color: #cc5b41; color: white;"  >Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setEditData(necessaryItemID, productQty, productId, appointmentName) {
+            document.getElementById('necessaryitemsID').value = necessaryItemID;
+            document.getElementById('editproductId').value = productId;
+            document.getElementById('editproductQty').value = productQty;
+            document.getElementById('appointmentID').value = appointmentName;
+            console.log(necessaryItemID, productQty, productId, appointmentName);
+            $('#editProduct').modal('show');
+        }
+
+        function setDeleteData(appointmentID, appointmentName) {
+            console.log(appointmentID, 'asfsa');
+            document.getElementById('deletecategoryID').value = appointmentID;
+            document.getElementById('appointmentName').value = appointmentName;
+            $('#deleteModal').modal('show');
+        } 
+  
+    </script>
+	 
+
+     {% endif %}
+
+     {% endfor %}    
+
+ {% endif %}
+{% endfor %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
