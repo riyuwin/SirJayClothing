@@ -18,10 +18,7 @@ from django.conf.urls.static import static
 
 from rest_framework import routers
 
-urlpatterns = [
-    #path('auth/account/', AccountList.as_view()),
-    #path('auth/account/<int:pk>/', AccountDetail.as_view()),
-
+urlpatterns = [ 
     path('customer/', CustomerList.as_view()),
     path('customer/<int:pk>/', CustomerDetail.as_view()),
 

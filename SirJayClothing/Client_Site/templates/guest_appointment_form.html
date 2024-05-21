@@ -117,8 +117,9 @@
                             <div class="col-md-12" >
                                 <h3>Selected Item</h3><br>
                                 <p id="selectedService">Selected Service: </p> 
-                                <p id="selectedSize">Size: </p>
+                                <!-- <p id="selectedSize">Size: </p> -->
                                 <p id="selectedPrice">Price: </p>
+                                <p id="selectedNote">Note: </p>
                             </div>
     
                             <div class="col-md-12 selectedItem d-flex justify-content-center" id="selectedImage"> 
@@ -142,9 +143,10 @@
             if (!serviceId) {
                 // Clear the displayed information
                 document.getElementById("selectedService").innerText = "Selected Service: ";
-                document.getElementById("selectedSize").innerText = "Size: ";
+                /* document.getElementById("selectedSize").innerText = "Size: "; */
                 document.getElementById("selectedPrice").innerText = "Price: ";
                 document.getElementById("selectedImg").src = "";
+                document.getElementById("selectedNote").innerText = "Note: \n";
                 return; // Exit the function if no service is selected
             }
 
@@ -162,8 +164,9 @@
                     console.log("Fetched data:", data);
                     if (data && data.clothOffered && data.clothPrice && data.image) { 
                         document.getElementById("selectedService").innerText = "Selected Service: " + data.clothOffered;
-                        document.getElementById("selectedSize").innerText = "Price: " + data.clothSize;
-                        document.getElementById("selectedPrice").innerText = "Price: " + data.clothPrice;
+                        /* document.getElementById("selectedSize").innerText = "Price: " + data.clothSize; */
+                        document.getElementById("selectedPrice").innerText = "Price: PHP" + data.clothPrice;
+                        document.getElementById("selectedNote").innerText = "Note: \n " + data.clothNotes;
 
                         var imageElement = document.createElement("img");
                         imageElement.src = data.image;

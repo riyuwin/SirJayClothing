@@ -12,6 +12,7 @@ from rest_framework.authtoken.models import Token
 #from .task import my_task
 import time 
 from datetime import datetime
+
 def DashboardPage(request):
     user_id = request.user.id if request.user.is_authenticated else None
     username = request.user.username if request.user.is_authenticated else None
@@ -41,6 +42,7 @@ def DashboardPage(request):
 
     # Calculate the total number of pending appointments
     total_pending_appointments = Appointment.objects.filter(appointmentStatus="Pending").count()
+    total_accepted_appointments = Appointment.objects.filter(appointmentStatus="Accepted").count()
 
     # Check if the requests were successful (status code 200)
     if all(response.status_code == 200 for response in [appointment_response, recent_appointment_response, customer_response, services_response]):
@@ -62,6 +64,7 @@ def DashboardPage(request):
         # Pass the data to the template for rendering
         return render(request, 'dashboard.html', 
                         {'total_pending_appointments': total_pending_appointments, 
+                         'total_accepted_appointments': total_accepted_appointments, 
                         'appointments': appointment_data,  
                         'customers': customer_data, 
                         'services': services_data,
